@@ -77,7 +77,7 @@ async function loadCategorias() {
 function mostrarLivrosPorCategoria(categoria) {
     const normalizar = (str) => (str || '').trim().toLowerCase();
     const livros = livrosLocal.filter((l) => normalizar(l.genero) === normalizar(categoria));
-    let html = '<div class="books-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">';
+    let html = '<div class="books-grid">';
     if (livros.length === 0) {
         html = '<div class="empty-state">Nenhum livro nesta categoria</div>';
     } else {
@@ -87,11 +87,17 @@ function mostrarLivrosPorCategoria(categoria) {
                 let raw = String(livro.capa_url).replace(/\\/g, '/').replace(/^\/+/, '');
                 capaUrl = raw.startsWith('http') ? raw : `/${raw}`;
             }
-            html += `<div class="book-card" style="display:flex;flex-direction:column;height:100%;min-width:220px;">
-                <div class="book-cover" style="${capaUrl ? `background-image: url('${capaUrl}'); background-size: cover; background-position: center;` : `background: linear-gradient(135deg, ${getGradientColor(livro.titulo)} 0%, ${getGradientColor(livro.autor)} 100%);`} width:100%;height:180px;border-radius:10px 10px 0 0;">${!capaUrl ? '📚' : ''}</div>
-                <div class="book-details" style="flex:1;display:flex;flex-direction:column;justify-content:space-between;">
-                    <div><div class="book-title">${livro.titulo}</div><div class="book-author">${livro.autor}</div><div class="book-meta"><span>${livro.genero}</span><span>${livro.ano_publicacao}</span></div></div>
+            html += `<div class="book-card">
+                <div class="book-cover" style="${capaUrl ? `background-image: url('${capaUrl}');` : `background: linear-gradient(135deg, ${getGradientColor(livro.titulo)} 0%, ${getGradientColor(livro.autor)} 100%);`}">${!capaUrl ? '📚' : ''}</div>
+                <div class="book-details">
+                    <div class="book-title">${livro.titulo}</div>
+                    <div class="book-author">${livro.autor}</div>
+                    <div class="book-meta"><span>${livro.genero}</span><span>${livro.ano_publicacao}</span></div>
                     <div class="stock-info">${livro.estoque > 0 ? `⏱️ ${livro.estoque} disponível` : '❌ Indisponível'}</div>
+                    <div class="action-buttons">
+                        <button class="btn-action btn-borrow btn-success" onclick="abrirModal('borrow', ${livro.id}, '${livro.titulo.replace(/'/g, "\\'")}')" ${livro.estoque === 0 ? 'disabled' : ''}>Pegar</button>
+                        <button class="btn-action btn-reserve btn-info" onclick="abrirModal('reserve', ${livro.id}, '${livro.titulo.replace(/'/g, "\\'")}')">Reservar</button>
+                    </div>
                 </div>
             </div>`;
         });

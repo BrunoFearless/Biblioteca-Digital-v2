@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - Biblioteca Digital</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="/css/theme.css">
     <link rel="stylesheet" href="/css/admin.css">
@@ -12,38 +18,47 @@
     <div class="app-shell admin-shell">
         <aside class="sidebar admin-sidebar">
             <div class="brand">
-                <span class="brand-icon">🔐</span>
-                <div>
-                    <strong>Biblioteca Digital</strong>
-                    <small>Painel Administrativo</small>
-                </div>
-            </div>
-            <div class="user-block">
-                <span class="user-info" id="userInfo">Administrador</span>
-                <button class="logout-btn" onclick="fazerLogout()">Sair</button>
+                <span class="brand-icon"><i class="ph ph-shield-check"></i></span>
             </div>
             <nav class="nav-tabs">
-                <button class="nav-btn active" onclick="showSection('dashboard')">📊 Dashboard</button>
-                <button class="nav-btn" onclick="showSection('livros')">📚 Livros</button>
-                <button class="nav-btn" onclick="showSection('usuarios')">👥 Usuários</button>
-                <button class="nav-btn" onclick="showSection('emprestimos')">🔄 Empréstimos</button>
-                <button class="nav-btn" onclick="showSection('reservas')">⭐ Reservas</button>
-                <button class="nav-btn" onclick="showSection('relatorios')">📈 Relatórios</button>
+                <button class="nav-btn active" onclick="showSection('dashboard')" title="Dashboard"><i class="ph ph-chart-pie-slice"></i></button>
+                <button class="nav-btn" onclick="showSection('livros')" title="Livros"><i class="ph ph-books"></i></button>
+                <button class="nav-btn" onclick="showSection('usuarios')" title="Usuários"><i class="ph ph-users"></i></button>
+                <button class="nav-btn" onclick="showSection('emprestimos')" title="Empréstimos"><i class="ph ph-arrows-left-right"></i></button>
+                <button class="nav-btn" onclick="showSection('reservas')" title="Reservas"><i class="ph ph-bookmark-simple"></i></button>
+                <button class="nav-btn" onclick="showSection('relatorios')" title="Relatórios"><i class="ph ph-file-text"></i></button>
             </nav>
+            <div class="sidebar-bottom">
+                <button class="nav-btn" title="Configurações"><i class="ph ph-gear"></i></button>
+                <button class="nav-btn logout-btn" onclick="fazerLogout()" title="Sair"><i class="ph ph-sign-out"></i></button>
+            </div>
         </aside>
 
         <main class="workspace admin-workspace">
-            <section class="workspace-head">
-                <h1>Gestão completa da biblioteca</h1>
-                <p>Controle livros, usuários, empréstimos, reservas e indicadores em um único fluxo.</p>
-            </section>
+            <div class="top-bar">
+                <section class="workspace-head">
+                    <h1>Command Center</h1>
+                    <p>Gestão completa da biblioteca e indicadores de desempenho.</p>
+                </section>
+                <div class="user-block">
+                    <button class="notification-btn"><i class="ph ph-bell"></i></button>
+                    <div class="user-avatar">
+                        <img src="https://ui-avatars.com/api/?name=Admin&background=random&color=fff" alt="Admin">
+                    </div>
+                    <span class="user-info" id="userInfo">Administrador</span>
+                </div>
+            </div>
 
             <section id="dashboard" class="content-section active">
                 <div id="dashboardContent"></div>
             </section>
 
             <section id="livros" class="content-section">
-                <button class="btn-primary" onclick="editarLivro(0)">➕ Adicionar Novo Livro</button>
+                <div class="section-actions">
+                    <button class="btn-primary" onclick="editarLivro(0)">
+                        <i class="ph ph-plus"></i> Adicionar Novo Livro
+                    </button>
+                </div>
                 <div id="livrosContent" class="loading">Carregando livros...</div>
             </section>
 
@@ -69,56 +84,60 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h2 id="modalTitulo">Adicionar Novo Livro</h2>
-                    <button class="close" onclick="fecharModal()">&times;</button>
+                    <button class="close" onclick="fecharModal()"><i class="ph ph-x"></i></button>
                 </div>
                 <form id="formLivro" onsubmit="salvarLivro(event)">
-                    <div class="form-group">
-                        <label>Título</label>
-                        <input type="text" id="formTitulo" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Autor</label>
-                        <input type="text" id="formAutor" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Gênero</label>
-                        <select id="formGenero" required>
-                            <option value="">Selecione um gênero</option>
-                            <option value="Programação">Programação</option>
-                            <option value="Ficção">Ficção</option>
-                            <option value="Fantasy">Fantasy</option>
-                            <option value="Mistério">Mistério</option>
-                            <option value="Romance">Romance</option>
-                            <option value="Científico">Científico</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Descrição</label>
-                        <textarea id="formDescricao" rows="3" maxlength="1000" placeholder="Digite uma descrição do livro..." style="resize: vertical; width: 100%;"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>Ano de Publicação</label>
-                        <input type="number" id="formAno" min="1900" max="2099" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Estoque</label>
-                        <input type="number" id="formEstoque" min="1" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Capa do Livro (arquivo ou URL)</label>
-                        <div style="margin-bottom: 10px;">
-                            <input type="file" id="formCapaArquivo" accept="image/*" style="margin-bottom: 10px;">
-                            <small style="display: block; color: #666; margin-bottom: 10px;">Ou</small>
-                            <input type="url" id="formCapaUrl" placeholder="https://exemplo.com/capa.jpg">
+                    <div class="form-body">
+                        <div class="form-group">
+                            <label>Título</label>
+                            <input type="text" id="formTitulo" required>
                         </div>
-                        <div id="capaPreview" style="display: none; margin-top: 10px;">
-                            <small style="color: #666;">Preview:</small>
-                            <img id="capaImg" src="" style="width: 80px; height: 120px; object-fit: cover; border-radius: 5px; margin-top: 5px;">
+                        <div class="form-group">
+                            <label>Autor</label>
+                            <input type="text" id="formAutor" required>
+                        </div>
+                        <div class="form-group row-group">
+                            <div class="col">
+                                <label>Gênero</label>
+                                <select id="formGenero" required>
+                                    <option value="">Selecione um gênero</option>
+                                    <option value="Programação">Programação</option>
+                                    <option value="Ficção">Ficção</option>
+                                    <option value="Fantasy">Fantasy</option>
+                                    <option value="Mistério">Mistério</option>
+                                    <option value="Romance">Romance</option>
+                                    <option value="Científico">Científico</option>
+                                </select>
+                            </div>
+                            <div class="col">
+                                <label>Ano</label>
+                                <input type="number" id="formAno" min="1900" max="2099" required>
+                            </div>
+                            <div class="col">
+                                <label>Estoque</label>
+                                <input type="number" id="formEstoque" min="1" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Descrição</label>
+                            <textarea id="formDescricao" rows="3" maxlength="1000" placeholder="Digite uma descrição do livro..." style="resize: vertical;"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Capa do Livro (arquivo ou URL)</label>
+                            <div class="file-url-inputs">
+                                <input type="file" id="formCapaArquivo" accept="image/*">
+                                <span class="divider">Ou</span>
+                                <input type="url" id="formCapaUrl" placeholder="https://exemplo.com/capa.jpg">
+                            </div>
+                            <div id="capaPreview" style="display: none; margin-top: 15px;">
+                                <small>Preview:</small>
+                                <img id="capaImg" src="">
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn-cancel" onclick="fecharModal()">Cancelar</button>
-                        <button type="submit" class="btn-submit">Salvar</button>
+                        <button type="submit" class="btn-submit">Salvar Alterações</button>
                     </div>
                 </form>
             </div>
@@ -129,28 +148,32 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h2>Detalhes do Usuário</h2>
-                    <button class="close" onclick="fecharModalUsuario()">&times;</button>
+                    <button class="close" onclick="fecharModalUsuario()"><i class="ph ph-x"></i></button>
                 </div>
-                <div id="modalUsuarioContent" style="padding: 30px;">
-                    <div style="margin-bottom: 20px;">
-                        <p><strong>Nome:</strong> <span id="usuarioNome"></span></p>
-                        <p><strong>Email:</strong> <span id="usuarioEmail"></span></p>
-                        <p><strong>Telefone:</strong> <span id="usuarioTelefone"></span></p>
-                        <p><strong>Endereço:</strong> <span id="usuarioEndereco"></span></p>
+                <div id="modalUsuarioContent" class="modal-body-padding">
+                    <div class="user-details-grid">
+                        <div class="detail-item"><strong>Nome:</strong> <span id="usuarioNome"></span></div>
+                        <div class="detail-item"><strong>Email:</strong> <span id="usuarioEmail"></span></div>
+                        <div class="detail-item"><strong>Telefone:</strong> <span id="usuarioTelefone"></span></div>
+                        <div class="detail-item"><strong>Endereço:</strong> <span id="usuarioEndereco"></span></div>
                     </div>
-                    <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
-                    <h3 style="color: #667eea; margin-bottom: 15px;">📚 Empréstimos Ativos</h3>
-                    <div id="usuarioEmprestimos" style="margin-bottom: 20px;">
-                        <p style="color: #666; font-size: 0.9em;">Carregando...</p>
+                    
+                    <div class="section-divider"></div>
+                    
+                    <h3 class="modal-section-title"><i class="ph ph-book-open"></i> Empréstimos Ativos</h3>
+                    <div id="usuarioEmprestimos" class="details-list">
+                        <p class="loading-text">Carregando...</p>
                     </div>
-                    <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
-                    <h3 style="color: #667eea; margin-bottom: 15px;">⭐ Reservas Ativas</h3>
-                    <div id="usuarioReservas" style="margin-bottom: 20px;">
-                        <p style="color: #666; font-size: 0.9em;">Carregando...</p>
+                    
+                    <div class="section-divider"></div>
+                    
+                    <h3 class="modal-section-title"><i class="ph ph-bookmark-simple"></i> Reservas Ativas</h3>
+                    <div id="usuarioReservas" class="details-list">
+                        <p class="loading-text">Carregando...</p>
                     </div>
-                    <div style="text-align: right; margin-top: 20px;">
-                        <button type="button" class="btn-cancel" onclick="fecharModalUsuario()">Fechar</button>
-                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="fecharModalUsuario()">Fechar</button>
                 </div>
             </div>
         </div>

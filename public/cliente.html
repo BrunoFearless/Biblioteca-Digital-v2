@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Biblioteca Digital - Cliente</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <link rel="stylesheet" href="/css/theme.css">
     <link rel="stylesheet" href="/css/cliente.css">
 </head>
@@ -11,54 +17,130 @@
     <div class="app-shell">
         <aside class="sidebar">
             <div class="brand">
-                <span class="brand-icon">📚</span>
-                <div>
-                    <strong>Biblioteca Digital</strong>
-                    <small>Painel do Cliente</small>
-                </div>
-            </div>
-            <div class="user-block">
-                <span class="user-info" id="userInfo">Usuário</span>
-                <button class="logout-btn" onclick="fazerLogout()">Sair</button>
+                <span class="brand-icon"><i class="ph ph-books"></i></span>
             </div>
             <nav class="nav-tabs">
-                <button class="nav-btn active" onclick="showSection('catalogo')">📖 Catálogo</button>
-                <button class="nav-btn" onclick="showSection('categorias')">🏷️ Categorias</button>
-                <button class="nav-btn" onclick="showSection('meus-emprestimos')">📚 Meus Empréstimos</button>
-                <button class="nav-btn" onclick="showSection('minhas-reservas')">⭐ Minhas Reservas</button>
+                <button class="nav-btn active" onclick="showSection('catalogo')" title="Catálogo"><i class="ph ph-house"></i></button>
+                <button class="nav-btn" onclick="showSection('categorias')" title="Categorias"><i class="ph ph-squares-four"></i></button>
+                <button class="nav-btn" onclick="showSection('meus-emprestimos')" title="Meus Empréstimos"><i class="ph ph-book-open"></i></button>
+                <button class="nav-btn" onclick="showSection('minhas-reservas')" title="Minhas Reservas"><i class="ph ph-bookmark-simple"></i></button>
             </nav>
+            <div class="sidebar-bottom">
+                <button class="nav-btn" title="Configurações"><i class="ph ph-gear"></i></button>
+                <button class="nav-btn logout-btn" onclick="fazerLogout()" title="Sair"><i class="ph ph-sign-out"></i></button>
+            </div>
         </aside>
 
         <main class="workspace">
-            <section class="workspace-head">
-                <h1>Explore livros e acompanhe sua jornada</h1>
-                <p>Catálogo, categorias, empréstimos e reservas em um só lugar.</p>
-            </section>
+            <div class="search-bar">
+                <i class="ph ph-magnifying-glass"></i>
+                <input type="text" id="searchInput" placeholder="Search book name, author, edition..." onkeyup="filtrarLivros()">
+                <button onclick="filtrarLivros()" class="search-btn">Search</button>
+            </div>
 
             <section id="catalogo" class="content-section active">
-                <div class="search-bar">
-                    <input type="text" id="searchInput" placeholder="Buscar por título, autor..." onkeyup="filtrarLivros()">
-                    <button onclick="filtrarLivros()">🔍 Buscar</button>
+                <!-- Featured Banner -->
+                <div class="featured-banner">
+                    <div class="featured-text">
+                        <h1 id="welcomeText">Happy reading, <span id="welcomeName">Harvey</span></h1>
+                        <p>Wow! you've delved deep into the literary world's secrets. Get reading now and discover new adventures!</p>
+                        <button class="btn-primary" onclick="document.getElementById('searchInput').focus()">Explore Catalog <i class="ph ph-arrow-up-right"></i></button>
+                    </div>
+                    <div class="featured-image">
+                        <div class="book-3d-placeholder">
+                            <div class="page left-page"></div>
+                            <div class="page right-page"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-header">
+                    <h2>Popular Now</h2>
+                    <div class="dots"><i class="ph ph-dots-three"></i></div>
                 </div>
                 <div id="catalogoContent" class="loading">Carregando livros...</div>
             </section>
 
             <section id="categorias" class="content-section">
-                <h2 class="section-title">Categorias de Livros</h2>
+                <div class="section-header">
+                    <h2>Categories</h2>
+                </div>
                 <div id="categoriasList" class="categorias-list"></div>
                 <div id="categoriasContent" class="loading">Selecione uma categoria para ver os livros.</div>
             </section>
 
             <section id="meus-emprestimos" class="content-section">
-                <h2 class="section-title">Meus Empréstimos</h2>
+                <div class="section-header">
+                    <h2>Meus Empréstimos</h2>
+                </div>
                 <div id="emprestimosContent" class="loading">Carregando empréstimos...</div>
             </section>
 
             <section id="minhas-reservas" class="content-section">
-                <h2 class="section-title">Minhas Reservas</h2>
+                <div class="section-header">
+                    <h2>Minhas Reservas</h2>
+                </div>
                 <div id="reservasContent" class="loading">Carregando reservas...</div>
             </section>
         </main>
+
+        <aside class="right-panel">
+            <div class="user-block">
+                <div class="user-avatar">
+                    <img src="https://ui-avatars.com/api/?name=User&background=random&color=fff" alt="User" id="userAvatarImg">
+                </div>
+                <span class="user-info" id="userInfo">Alexander Mark</span>
+                <button class="notification-btn"><i class="ph ph-bell"></i></button>
+            </div>
+
+            <div class="right-section current-reading">
+                <h2>The Chambers of Secrets</h2>
+                <div class="reading-progress">
+                    <span class="current-page">154</span> / 300 pages
+                </div>
+                <p class="reading-desc">Harry as he returns to Hogwarts school of witchcraft and wizardry for his 2nd year, only to discover that...</p>
+                <div class="reading-author">- JK Rowlings</div>
+            </div>
+
+            <div class="right-section schedule">
+                <div class="schedule-header">
+                    <h3>Schedule Reading</h3>
+                    <div class="schedule-nav">
+                        <i class="ph ph-caret-left"></i>
+                        <i class="ph ph-caret-right"></i>
+                    </div>
+                </div>
+                <div class="calendar-strip">
+                    <div class="cal-day"><span>Sun</span><strong>11</strong></div>
+                    <div class="cal-day"><span>Mon</span><strong>12</strong></div>
+                    <div class="cal-day active"><span>Tue</span><strong>13</strong></div>
+                    <div class="cal-day"><span>Wed</span><strong>14</strong></div>
+                    <div class="cal-day"><span>Thu</span><strong>15</strong></div>
+                </div>
+            </div>
+
+            <div class="right-section friends">
+                <div class="friends-header">
+                    <h3>Reader Friends</h3>
+                    <div class="dots"><i class="ph ph-dots-three"></i></div>
+                </div>
+                <div class="friend-item">
+                    <img src="https://i.pravatar.cc/150?img=11" alt="Roberto">
+                    <div class="friend-info">
+                        <strong>Roberto Jordan</strong>
+                        <p>What a delightful and magical chapter it is! It indeed transports readers to the wizarding world..</p>
+                        <div class="friend-activity"><i class="ph ph-check"></i> Chapter Five: Diagon Alley <span class="time">2 min ago</span></div>
+                    </div>
+                </div>
+                <div class="friend-item">
+                    <img src="https://i.pravatar.cc/150?img=5" alt="Anna">
+                    <div class="friend-info">
+                        <strong>Anna Henry</strong>
+                        <p>I finished reading the chapter last night and</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
     </div>
 
     <div id="modal" class="modal">
@@ -79,5 +161,17 @@
     <script src="/scripts/cliente/modal.js"></script>
     <script src="/scripts/cliente/navigation.js"></script>
     <script src="/scripts/cliente/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const userStr = localStorage.getItem('usuarioAtual');
+            if(userStr) {
+                const user = JSON.parse(userStr);
+                const firstName = user.nome.split(' ')[0];
+                document.getElementById('welcomeName').textContent = firstName;
+                document.getElementById('userInfo').textContent = user.nome;
+                document.getElementById('userAvatarImg').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.nome)}&background=random&color=fff`;
+            }
+        });
+    </script>
 </body>
 </html>

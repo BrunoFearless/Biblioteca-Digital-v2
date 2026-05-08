@@ -43,9 +43,9 @@ async function loadLivros() {
                             <div class="book-author">${livro.autor}</div>
                             <div class="book-meta"><span>${livro.genero}</span><span>${livro.ano_publicacao}</span></div>
                             <div class="stock-info"><span class="stock-badge ${stockClass}">${stockText}</span></div>
-                            <div>
-                                <button class="action-btn btn-info" onclick="editarLivro(${livro.id})">✏️ Editar</button>
-                                <button class="action-btn btn-danger" onclick="deletarLivro(${livro.id})">🗑️ Deletar</button>
+                            <div class="action-buttons">
+                                <button class="action-btn btn-info" onclick="editarLivro(${livro.id})"><i class="ph ph-pencil-simple"></i> Editar</button>
+                                <button class="action-btn btn-danger" onclick="deletarLivro(${livro.id})"><i class="ph ph-trash"></i> Deletar</button>
                             </div>
                         </div>
                     </div>`;

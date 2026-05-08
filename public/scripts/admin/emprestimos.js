@@ -23,10 +23,10 @@ async function loadEmprestimos() {
                         <td>${livro?.titulo || 'Desconhecido'}</td>
                         <td>${new Date(e.data_emprestimo).toLocaleDateString()}</td>
                         <td>${new Date(e.data_devolucao).toLocaleDateString()}</td>
-                        <td>${e.devolvido ? '✅ Devolvido' : '⏳ Pendente'}</td>
+                        <td>${e.devolvido ? '<span class="status-badge status-devolvido">Devolvido</span>' : '<span class="status-badge status-ativo">Pendente</span>'}</td>
                         <td>
-                            ${!e.devolvido ? `<button class="action-btn btn-success" onclick="marcarDevolvido(${e.id})">✔️ Marcar Devolvido</button>` : ''}
-                            <button class="action-btn btn-delete" onclick="deletarEmprestimo(${e.id})">🗑️ Deletar</button>
+                            ${!e.devolvido ? `<button class="action-btn btn-success" onclick="marcarDevolvido(${e.id})"><i class="ph ph-check"></i> Devolvido</button>` : ''}
+                            <button class="action-btn btn-danger" onclick="deletarEmprestimo(${e.id})"><i class="ph ph-trash"></i> Deletar</button>
                         </td>
                     </tr>`;
                 }).join('')}</tbody></table></div>`;
