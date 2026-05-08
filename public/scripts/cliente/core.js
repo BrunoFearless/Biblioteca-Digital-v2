@@ -29,6 +29,14 @@ function initClienteContext() {
         return false;
     }
 
+    // Se o ID for um timestamp gigante gerado pelo localStorage antigo, forçamos o re-login
+    if (usuarioAtual.id > 1000000000000) {
+        sessionStorage.clear();
+        alert('O sistema foi atualizado! Por favor, faça login novamente para sincronizar a sua conta.');
+        delayedNavigate('/index.html');
+        return false;
+    }
+
     document.getElementById('userInfo').textContent = `Olá, ${usuarioAtual.nome}!`;
     return true;
 }

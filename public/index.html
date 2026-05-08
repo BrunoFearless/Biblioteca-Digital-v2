@@ -4,284 +4,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Biblioteca Digital - Login</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 900px;
-            width: 100%;
-        }
-
-        .logo-section {
-            text-align: center;
-            margin-bottom: 50px;
-            color: white;
-        }
-
-        .logo-section h1 {
-            font-size: 3em;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        .logo-section p {
-            font-size: 1.2em;
-            opacity: 0.9;
-        }
-
-        .modes {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin-bottom: 50px;
-        }
-
-        .mode-card {
-            background: white;
-            border-radius: 15px;
-            padding: 40px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-            cursor: pointer;
-            transition: all 0.3s;
-            text-align: center;
-        }
-
-        .mode-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        }
-
-        .mode-icon {
-            font-size: 4em;
-            margin-bottom: 20px;
-        }
-
-        .mode-card h2 {
-            color: #667eea;
-            margin-bottom: 15px;
-            font-size: 1.8em;
-        }
-
-        .mode-card p {
-            color: #666;
-            margin-bottom: 25px;
-            line-height: 1.6;
-        }
-
-        .mode-btn {
-            padding: 12px 30px;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1em;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: bold;
-        }
-
-        .mode-btn:hover {
-            background: #764ba2;
-            transform: scale(1.05);
-        }
-
-        .login-form {
-            background: white;
-            border-radius: 15px;
-            padding: 40px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-            margin-top: 30px;
-            display: none;
-        }
-
-        .login-form.active {
-            display: block;
-        }
-
-        .login-form h3 {
-            color: #667eea;
-            margin-bottom: 25px;
-            font-size: 1.6em;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            color: #333;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 1em;
-            transition: border-color 0.3s;
-        }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .form-buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 25px;
-        }
-
-        .btn-submit {
-            padding: 12px 30px;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1em;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: bold;
-        }
-
-        .btn-submit:hover {
-            background: #764ba2;
-        }
-
-        .btn-back {
-            padding: 12px 30px;
-            background: #95a5a6;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1em;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: bold;
-        }
-
-        .btn-back:hover {
-            background: #7f8c8d;
-        }
-
-        .toggle-link {
-            text-align: center;
-            color: #667eea;
-            margin-top: 15px;
-            cursor: pointer;
-            text-decoration: underline;
-        }
-
-        .error {
-            background: #f8d7da;
-            color: #721c24;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            display: none;
-        }
-
-        .success {
-            background: #d4edda;
-            color: #155724;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            display: none;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        /* Estilo para o select de tipo de usuário */
-        #tipoUsuarioGroup {
-            margin-bottom: 16px;
-        }
-        #tipoUsuario {
-            width: 100%;
-            padding: 10px;
-            border-radius: 5px;
-            border: 2px solid #667eea;
-            font-size: 1em;
-            background: #f8f8ff;
-            color: #333;
-            margin-top: 4px;
-            transition: border 0.2s;
-        }
-        #tipoUsuario:focus {
-            border: 2px solid #764ba2;
-            outline: none;
-        }
-
-        /* Botão de login destacado */
-        .btn-submit {
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-            color: #fff;
-            font-weight: bold;
-            border: none;
-            border-radius: 5px;
-            padding: 12px 28px;
-            font-size: 1.1em;
-            cursor: pointer;
-            box-shadow: 0 2px 8px rgba(102,126,234,0.12);
-            transition: background 0.2s, transform 0.2s;
-        }
-        .btn-submit:hover:not(:disabled) {
-            background: linear-gradient(90deg, #764ba2 0%, #667eea 100%);
-            transform: translateY(-2px) scale(1.04);
-        }
-        .btn-submit:disabled {
-            background: #ccc;
-            color: #888;
-            cursor: not-allowed;
-        }
-    </style>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
     <link rel="stylesheet" href="/css/theme.css">
+    <link rel="stylesheet" href="/css/index.css">
 </head>
 <body>
     <div class="container">
-        <div class="logo-section">
-            <h1 onclick="irParaHome()" class="ms">📚 Biblioteca Digital</h1>
+        <div class="logo-section" onclick="irParaHome()">
+            <h1><i class="ph ph-books"></i> Biblioteca Digital</h1>
             <p>Sistema de Gerenciamento de Livros e Empréstimos</p>
         </div>
 
         <!-- Seleção de Modo -->
         <div id="modeSelection" class="modes">
             <div class="mode-card" onclick="selectMode('cliente')">
-                <div class="mode-icon">👤</div>
+                <div class="mode-icon"><i class="ph ph-user"></i></div>
                 <h2>Modo Cliente</h2>
-                <p>Procure livros, pegue emprestado, faça reservas e acompanhe seus empréstimos.</p>
-                <button class="mode-btn">Entrar como Cliente</button>
+                <p>Procure livros, pegue emprestado, faça reservas e acompanhe seus empréstimos de forma intuitiva.</p>
+                <button class="btn btn-primary">Entrar como Cliente</button>
             </div>
 
             <div class="mode-card" onclick="selectMode('admin')">
-                <div class="mode-icon">🔐</div>
+                <div class="mode-icon"><i class="ph ph-shield-check"></i></div>
                 <h2>Modo Admin</h2>
-                <p>Gerencie livros, usuários, empréstimos e acompanhe toda a atividade da biblioteca.</p>
-                <button class="mode-btn">Entrar como Admin</button>
+                <p>Gerencie o acervo de livros, monitore usuários, e acompanhe toda a atividade da biblioteca.</p>
+                <button class="btn btn-primary">Entrar como Admin</button>
             </div>
         </div>
 
@@ -304,15 +59,15 @@
                 </div>
                 <div class="form-group" id="tipoUsuarioGroup" style="display:none;">
                     <label for="tipoUsuario">Tipo de usuário</label>
-                    <select id="tipoUsuario" tabindex="0" autocomplete="off" style="background:#f8f8ff; cursor:pointer; pointer-events:auto;">
+                    <select id="tipoUsuario" tabindex="0" autocomplete="off">
                         <option value="aluno">Aluno</option>
                         <option value="professor">Professor</option>
                     </select>
                 </div>
                 <div class="toggle-link" onclick="switchTab('registroTab')">Não tem conta? Registre-se aqui</div>
                 <div class="form-buttons">
-                    <button class="btn-submit" onclick="fazerLogin()">Entrar</button>
-                    <button class="btn-back" onclick="voltarModo()">Voltar</button>
+                    <button class="btn btn-primary btn-submit" onclick="fazerLogin()">Entrar</button>
+                    <button class="btn btn-secondary" onclick="voltarModo()">Voltar</button>
                 </div>
             </div>
 
@@ -336,12 +91,12 @@
                 </div>
                 <div class="form-group">
                     <label for="senhaReg">Senha</label>
-                    <input type="password" id="senhaReg" placeholder="Digite uma senha">
+                    <input type="password" id="senhaReg" placeholder="Digite uma senha forte">
                 </div>
                 <div class="toggle-link" onclick="switchTab('loginTab')">Já tem conta? Faça login aqui</div>
                 <div class="form-buttons">
-                    <button class="btn-submit" onclick="registrarUsuario()">Registrar</button>
-                    <button class="btn-back" onclick="voltarModo()">Voltar</button>
+                    <button class="btn btn-primary btn-submit" onclick="registrarUsuario()">Registrar</button>
+                    <button class="btn btn-secondary" onclick="voltarModo()">Voltar</button>
                 </div>
             </div>
         </div>
@@ -350,9 +105,9 @@
     <script>
         let modoAtual = null;
 
-        // Função para navegar para a home (pode ser chamada antes do login bem-sucedido)
+        // Função para navegar para a home
         function irParaHome() {
-        window.location.href = 'home.html';
+            window.location.href = 'home.html';
         }
 
         function selectMode(modo) {
@@ -376,15 +131,10 @@
                 document.getElementById('loginTitle').textContent = 'Login Cliente';
                 document.getElementById('tipoUsuarioGroup').style.display = 'block';
                 const select = document.getElementById('tipoUsuario');
-                // Nunca trava o select entre sessões
                 select.disabled = false;
                 select.title = '';
                 select.removeAttribute('readonly');
                 select.removeAttribute('aria-disabled');
-                select.style.pointerEvents = 'auto';
-                select.style.opacity = '1';
-                select.style.background = '#f8f8ff';
-                select.style.cursor = 'pointer';
                 if (!select.value || (select.value !== 'aluno' && select.value !== 'professor')) {
                     select.value = 'aluno';
                 }
@@ -392,7 +142,6 @@
         }
 
         function voltarModo() {
-            // Ao voltar para a escolha de modo, libera o select de tipo de usuário
             const select = document.getElementById('tipoUsuario');
             if (select) {
                 select.disabled = false;
@@ -453,7 +202,6 @@
             }
 
             if (modoAtual === 'admin') {
-                // Admin: email = admin@biblioteca.com e senha = admin123
                 if (email === 'admin@biblioteca.com' && senha === 'admin123') {
                     sessionStorage.setItem('modo', 'admin');
                     sessionStorage.setItem('usuario', JSON.stringify({ email, nome: 'Administrador' }));
@@ -462,10 +210,8 @@
                     mostrarErro('Email ou senha incorretos (use: admin@biblioteca.com / admin123)');
                 }
             } else {
-                // Cliente: login de professor só com email/senha fixa
                 if (tipoUsuario === 'professor') {
                     if (email === 'professor@biblioteca.com' && senha === 'professor123') {
-                        // Buscar/criar professor real no banco
                         fetch('/api/usuarios')
                           .then(r => r.json())
                           .then(usuariosDoBanco => {
@@ -478,7 +224,6 @@
                                   delayedNavigate('/cliente.html');
                               };
                               if (!usuarioBanco) {
-                                  // Criar professor se não existir
                                   fetch('/usuarios', {
                                       method: 'POST',
                                       headers: { 'Content-Type': 'application/json' },
@@ -492,7 +237,6 @@
                                   })
                                   .then(r => r.json())
                                   .then(novo => {
-                                      // Buscar pelo email para garantir id correto
                                       fetch('/api/usuarios')
                                         .then(r2 => r2.json())
                                         .then(usuariosAtualizados => {
@@ -512,60 +256,47 @@
                         mostrarErro('Para professor, use: professor@biblioteca.com / professor123');
                     }
                 } else {
-                    // Cliente comum (aluno)
                     loginCliente(email, senha, tipoUsuario);
                 }
             }
         }
 
         function loginCliente(email, senha, tipoUsuario) {
-            // Tentar login: primeiro localStorage, depois banco de dados
-            const usuarios = JSON.parse(localStorage.getItem('usuarios') || '{}');
-            if (usuarios[email] && usuarios[email].senha === senha) {
-                // Login via localStorage
-                const usuario = { ...usuarios[email], tipo: tipoUsuario };
-                sessionStorage.setItem('modo', 'cliente');
-                sessionStorage.setItem('usuario', JSON.stringify(usuario));
-                delayedNavigate('/cliente.html');
-                return;
-            }
-            // Buscar do banco de dados
             fetch('/api/usuarios')
                 .then(r => r.json())
                 .then(usuariosDoBanco => {
                     const usuarioBanco = usuariosDoBanco.find(u => u.email === email);
                     if (usuarioBanco) {
-                        // Usuário encontrado no banco, fazer login direto (sem verificar senha de teste)
-                        // Salvar todos os usuários no localStorage para rápido acesso
-                        const usuariosCache = {};
-                        usuariosDoBanco.forEach(u => {
-                            usuariosCache[u.email] = u;
-                        });
-                        localStorage.setItem('usuarios', JSON.stringify(usuariosCache));
                         const usuario = { ...usuarioBanco, tipo: tipoUsuario };
                         sessionStorage.setItem('modo', 'cliente');
                         sessionStorage.setItem('usuario', JSON.stringify(usuario));
-                        console.log('Login bem-sucedido! Usuário:', usuario);
                         delayedNavigate('/cliente.html');
                     } else {
-                        mostrarErro('Email ou senha incorretos');
+                        localStorage.removeItem('usuarios'); // Limpar cache corrompido
+                        mostrarErro('Conta não encontrada. Se tentou registar antes, houve um erro. Por favor, crie uma conta nova.');
                     }
                 })
                 .catch(e => {
                     console.error('Erro ao buscar usuários:', e);
-                    mostrarErro('Email ou senha incorretos');
+                    mostrarErro('Erro de conexão com o servidor');
                 });
         }
 
-        function registrarUsuario() {
+        async function registrarUsuario() {
             const nome = document.getElementById('nome').value;
             const email = document.getElementById('emailReg').value;
-            const telefone = document.getElementById('telefoneReg').value;
+            const telefoneRaw = document.getElementById('telefoneReg').value;
             const endereco = document.getElementById('enderecoReg').value;
             const senha = document.getElementById('senhaReg').value;
 
-            if (!nome || !email || !telefone || !endereco || !senha) {
+            if (!nome || !email || !telefoneRaw || !endereco || !senha) {
                 mostrarErro('Preencha todos os campos');
+                return;
+            }
+
+            const telefone = telefoneRaw.replace(/\D/g, '');
+            if (telefone.length < 10 || telefone.length > 15) {
+                mostrarErro('O telefone deve ter entre 10 e 15 números (só dígitos).');
                 return;
             }
 
@@ -574,40 +305,32 @@
                 return;
             }
 
-            // Impedir cadastro de professor
             if (email === 'professor@biblioteca.com') {
                 mostrarErro('Cadastro de professor não permitido. Use o login fixo.');
                 return;
             }
 
-            // Armazenar no localStorage (em produção seria no banco de dados)
-            const usuarios = JSON.parse(localStorage.getItem('usuarios') || '{}');
-            
-            if (usuarios[email]) {
-                mostrarErro('Email já cadastrado');
-                return;
+            try {
+                const response = await fetch('/usuarios', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nome, email, telefone, endereco, tipo: 'aluno' })
+                });
+
+                if (!response.ok) {
+                    const data = await response.json();
+                    throw new Error(data.error || 'Erro ao registrar usuário. Tente novamente.');
+                }
+
+                mostrarSucesso('Conta criada com sucesso! Faça login agora.');
+                setTimeout(() => {
+                    switchTab('loginTab');
+                    document.getElementById('email').value = email;
+                    document.getElementById('senha').value = '';
+                }, 2000);
+            } catch (error) {
+                mostrarErro(error.message);
             }
-
-            usuarios[email] = { nome, email, telefone, endereco, senha, id: Date.now() };
-            localStorage.setItem('usuarios', JSON.stringify(usuarios));
-
-            // Também salvar no banco de dados via API
-            salvarUsuariNoBanco({ nome, email, telefone, endereco });
-            
-            mostrarSucesso('Conta criada com sucesso! Faça login agora.');
-            setTimeout(() => {
-                switchTab('loginTab');
-                document.getElementById('email').value = email;
-                document.getElementById('senha').value = '';
-            }, 2000);
-        }
-
-        function salvarUsuariNoBanco(dados) {
-            fetch('/usuarios', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(dados)
-            }).catch(e => console.log('Nota: Usuário salvo localmente'));
         }
     </script>
     <script>
@@ -617,7 +340,6 @@
             overlay.id = 'pageOverlay';
             document.addEventListener('DOMContentLoaded', ()=>{
                 document.body.appendChild(overlay);
-                // trigger enter animation
                 requestAnimationFrame(()=>{
                     overlay.classList.add('visible');
                     setTimeout(()=> overlay.classList.remove('visible'), 20);
