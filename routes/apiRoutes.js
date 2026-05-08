@@ -5,6 +5,8 @@ import { createEmprestimosApiRoutes } from "./api/emprestimosApiRoutes.js";
 import { createReservasApiRoutes } from "./api/reservasApiRoutes.js";
 import { createRelatoriosApiRoutes } from "./api/relatoriosApiRoutes.js";
 import { createTestApiRoutes } from "./api/testApiRoutes.js";
+import { createFavoritosApiRoutes } from "./api/favoritosApiRoutes.js";
+import { createAvaliacoesApiRoutes } from "./api/avaliacoesApiRoutes.js";
 
 export function createApiRoutes(upload) {
   const router = Router();
@@ -14,6 +16,8 @@ export function createApiRoutes(upload) {
   router.use("/emprestimos", createEmprestimosApiRoutes());
   router.use("/reservas", createReservasApiRoutes());
   router.use("/relatorios", createRelatoriosApiRoutes());
+  router.use("/favoritos", createFavoritosApiRoutes());
+  router.use("/avaliacoes", createAvaliacoesApiRoutes());
 
   return router;
 }

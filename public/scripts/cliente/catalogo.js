@@ -1,11 +1,45 @@
+let favoritosIds = [];
+let avaliacoesMedias = {};
+
 async function loadCatalogo() {
     try {
-        const livros = await fetch('/api/livros').then((r) => r.json());
+        const [livros, favoritos, avaliacoes] = await Promise.all([
+            fetch('/api/livros').then((r) => r.json()),
+            fetch(`/api/favoritos/ids?usuario_id=${usuarioAtual.id}`).then((r) => r.json()),
+            fetch('/api/avaliacoes/medias').then((r) => r.json())
+        ]);
+        
         livrosLocal = livros;
+        favoritosIds = favoritos;
+        avaliacoesMedias = avaliacoes.reduce((acc, curr) => {
+            acc[curr.livro_id] = curr;
+            return acc;
+        }, {});
+        
+        renderizarPills();
         renderizarLivros(livros);
-    } catch {
+    } catch (e) {
+        console.error(e);
         document.getElementById('catalogoContent').innerHTML = '<div class="empty-state">Erro ao carregar catálogo</div>';
     }
+}
+
+function renderizarPills() {
+    const categorias = ['Todos', ...new Set(livrosLocal.map(l => l.genero).filter(Boolean))];
+    const container = document.getElementById('categoryPills');
+    container.innerHTML = categorias.map(cat => `
+        <button class="pill ${cat === 'Todos' ? 'active' : ''}" onclick="filtrarPorCategoria(this, '${cat}')">${cat}</button>
+    `).join('');
+}
+
+function filtrarPorCategoria(btn, categoria) {
+    document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    
+    const filtrados = categoria === 'Todos' 
+        ? livrosLocal 
+        : livrosLocal.filter(l => l.genero === categoria);
+    renderizarLivros(filtrados);
 }
 
 function filtrarLivros() {
@@ -24,6 +58,9 @@ function renderizarLivros(livros) {
         livros.forEach((livro) => {
             const jaPegueiEmprestado = emprestimosLocal.some((e) => e.livro_id === livro.id && !e.devolvido);
             const jaReservei = reservasLocal.some((r) => r.livro_id === livro.id && r.status === 'ativa');
+            const ehFavorito = favoritosIds.includes(livro.id);
+            const avaliacao = avaliacoesMedias[livro.id] || { media: 0, total_avaliacoes: 0 };
+            
             const capaUrl = (() => {
                 if (!livro.capa_url) return null;
                 let raw = String(livro.capa_url).replace(/\\/g, '/');
@@ -32,13 +69,23 @@ function renderizarLivros(livros) {
             })();
 
             html += `
-                <div class="book-card">
+                <div class="book-card" style="position: relative;">
+                    <button class="favorite-btn ${ehFavorito ? 'active' : ''}" onclick="toggleFavorito(this, ${livro.id})">
+                        <i class="ph-fill ph-heart"></i>
+                    </button>
                     <div class="book-cover" style="${capaUrl ? `background-image: url('${capaUrl}'); background-size: cover; background-position: center;` : `background: linear-gradient(135deg, ${getGradientColor(livro.titulo)} 0%, ${getGradientColor(livro.autor)} 100%);`}">
                         ${!capaUrl ? '📚' : ''}
                     </div>
                     <div class="book-details">
                         <div class="book-title">${livro.titulo}</div>
                         <div class="book-author">${livro.autor}</div>
+                        
+                        <div class="book-rating">
+                            <i class="ph-fill ph-star"></i>
+                            <span>${Number(avaliacao.media).toFixed(1)}</span>
+                            <span class="rating-count">(${avaliacao.total_avaliacoes})</span>
+                        </div>
+
                         <div class="book-meta"><span>${livro.genero}</span><span>${livro.ano_publicacao}</span></div>
                         <div class="stock-info">${livro.estoque > 0 ? `⏱️ ${livro.estoque} disponível` : '❌ Indisponível'}</div>
                         <div class="action-buttons">

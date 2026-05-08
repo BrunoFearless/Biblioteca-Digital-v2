@@ -12,6 +12,8 @@
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <link rel="stylesheet" href="/css/theme.css">
     <link rel="stylesheet" href="/css/cliente.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="app-shell">
@@ -21,9 +23,10 @@
             </div>
             <nav class="nav-tabs">
                 <button class="nav-btn active" onclick="showSection('catalogo')" title="Catálogo"><i class="ph ph-house"></i></button>
-                <button class="nav-btn" onclick="showSection('categorias')" title="Categorias"><i class="ph ph-squares-four"></i></button>
+                <button class="nav-btn" onclick="showSection('meus-favoritos')" title="Favoritos"><i class="ph ph-heart"></i></button>
                 <button class="nav-btn" onclick="showSection('meus-emprestimos')" title="Meus Empréstimos"><i class="ph ph-book-open"></i></button>
                 <button class="nav-btn" onclick="showSection('minhas-reservas')" title="Minhas Reservas"><i class="ph ph-bookmark-simple"></i></button>
+                <button class="nav-btn" onclick="showSection('meu-perfil')" title="O Meu Perfil"><i class="ph ph-chart-pie-slice"></i></button>
             </nav>
             <div class="sidebar-bottom">
                 <button class="nav-btn" title="Configurações"><i class="ph ph-gear"></i></button>
@@ -54,6 +57,11 @@
                     </div>
                 </div>
 
+                <div class="filter-pills" id="categoryPills">
+                    <!-- Gerado dinamicamente -->
+                    <button class="pill active" onclick="filtrarPorCategoria('Todos')">Todos</button>
+                </div>
+
                 <div class="section-header">
                     <h2>Popular Now</h2>
                     <div class="dots"><i class="ph ph-dots-three"></i></div>
@@ -61,12 +69,39 @@
                 <div id="catalogoContent" class="loading">Carregando livros...</div>
             </section>
 
-            <section id="categorias" class="content-section">
+            <section id="meus-favoritos" class="content-section">
                 <div class="section-header">
-                    <h2>Categories</h2>
+                    <h2>Os Meus Favoritos</h2>
                 </div>
-                <div id="categoriasList" class="categorias-list"></div>
-                <div id="categoriasContent" class="loading">Selecione uma categoria para ver os livros.</div>
+                <div id="favoritosContent" class="loading">Carregando seus favoritos...</div>
+            </section>
+
+            <section id="meu-perfil" class="content-section">
+                <div class="section-header">
+                    <h2>O Meu Perfil & Estatísticas</h2>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <i class="ph ph-book"></i>
+                        <div class="stat-info">
+                            <h3 id="statTotalLidos">0</h3>
+                            <p>Livros Lidos</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="ph ph-clock"></i>
+                        <div class="stat-info">
+                            <h3 id="statEmprestimosAtivos">0</h3>
+                            <p>Em Curso</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-container glass-card">
+                    <h3>Atividade de Leitura</h3>
+                    <canvas id="readingChart"></canvas>
+                </div>
             </section>
 
             <section id="meus-emprestimos" class="content-section">
@@ -154,10 +189,36 @@
         </div>
     </div>
 
+    <!-- Modal de Avaliação -->
+    <div id="modalAvaliacao" class="modal">
+        <div class="modal-content">
+            <h2>Avaliar Livro</h2>
+            <p>Como foi a sua experiência com esta leitura?</p>
+            
+            <div class="star-rating" id="starContainer">
+                <i class="ph ph-star" data-value="1"></i>
+                <i class="ph ph-star" data-value="2"></i>
+                <i class="ph ph-star" data-value="3"></i>
+                <i class="ph ph-star" data-value="4"></i>
+                <i class="ph ph-star" data-value="5"></i>
+            </div>
+            
+            <textarea id="reviewComment" placeholder="Escreva um breve comentário (opcional)..." class="glass-input"></textarea>
+
+            <div class="modal-buttons">
+                <button class="btn-confirm" onclick="enviarAvaliacao()">Enviar Avaliação</button>
+                <button class="btn-cancel" onclick="fecharModalAvaliacao()">Agora não</button>
+            </div>
+        </div>
+    </div>
+
     <script src="/scripts/cliente/overlay.js"></script>
     <script src="/scripts/cliente/core.js"></script>
     <script src="/scripts/cliente/catalogo.js"></script>
     <script src="/scripts/cliente/historico.js"></script>
+    <script src="/scripts/cliente/favoritos.js"></script>
+    <script src="/scripts/cliente/perfil.js"></script>
+    <script src="/scripts/cliente/avaliar.js"></script>
     <script src="/scripts/cliente/modal.js"></script>
     <script src="/scripts/cliente/navigation.js"></script>
     <script src="/scripts/cliente/app.js"></script>

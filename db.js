@@ -91,6 +91,32 @@ async function initializeDatabase() {
       );
     `);
 
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS favoritos (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        usuario_id INT NOT NULL,
+        livro_id INT NOT NULL,
+        data_adicionado TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+        FOREIGN KEY (livro_id) REFERENCES livros(id) ON DELETE CASCADE,
+        UNIQUE KEY unique_favorito (usuario_id, livro_id)
+      );
+    `);
+
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS avaliacoes (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        usuario_id INT NOT NULL,
+        livro_id INT NOT NULL,
+        nota INT NOT NULL CHECK (nota >= 1 AND nota <= 5),
+        comentario TEXT,
+        data_avaliacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+        FOREIGN KEY (livro_id) REFERENCES livros(id) ON DELETE CASCADE,
+        UNIQUE KEY unique_avaliacao (usuario_id, livro_id)
+      );
+    `);
+
     console.log("Tabelas verificadas/criadas com sucesso.");
   } catch (error) {
     console.error("Erro na inicialização da base de dados:", error);

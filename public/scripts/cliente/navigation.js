@@ -15,7 +15,8 @@ function showSection(section) {
         if (section === 'catalogo') loadCatalogo();
         else if (section === 'meus-emprestimos') carregarEmprestimosDoServidor().then(() => loadMeusEmprestimos());
         else if (section === 'minhas-reservas') carregarReservasDoServidor().then(() => loadMinhasReservas());
-        else if (section === 'categorias') loadCategorias();
+        else if (section === 'meus-favoritos') loadFavoritos();
+        else if (section === 'meu-perfil') loadPerfil();
     };
 
     if (current && current.id !== section) {

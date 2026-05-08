@@ -12,7 +12,12 @@ async function loadMeusEmprestimos() {
                     const dataDev = new Date(e.data_devolucao);
                     const diffDias = Math.ceil((dataDev - hoje) / (1000 * 60 * 60 * 24));
                     const prazoStr = diffDias > 0 ? `${diffDias} dia(s)` : diffDias === 0 ? 'Último dia!' : `<span style="color:#e74c3c;font-weight:bold;">Expirado (${Math.abs(diffDias)} dia(s))</span>`;
-                    return `<tr><td>${e.livro_id}</td><td>${new Date(e.data_emprestimo).toLocaleDateString()}</td><td>${new Date(e.data_devolucao).toLocaleDateString()}</td><td>${prazoStr}</td><td><span class="status-badge ${e.devolvido ? 'status-devolvido' : 'status-ativo'}">${e.devolvido ? 'Devolvido' : 'Ativo'}</span></td><td>${!e.devolvido ? `<button class="btn-action btn-danger" onclick="abrirModal('return', ${e.id}, '')">Devolver</button>` : '-'}</td></tr>`;
+                    
+                    const acaoHtml = e.devolvido 
+                        ? `<button class="btn-action btn-info" onclick="abrirModalAvaliacao(${e.livro_id})"><i class="ph ph-star"></i> Avaliar</button>`
+                        : `<button class="btn-action btn-danger" onclick="abrirModal('return', ${e.id}, '')">Devolver</button>`;
+
+                    return `<tr><td>${e.livro_id}</td><td>${new Date(e.data_emprestimo).toLocaleDateString()}</td><td>${new Date(e.data_devolucao).toLocaleDateString()}</td><td>${prazoStr}</td><td><span class="status-badge ${e.devolvido ? 'status-devolvido' : 'status-ativo'}">${e.devolvido ? 'Devolvido' : 'Ativo'}</span></td><td>${acaoHtml}</td></tr>`;
                 }).join('')}
             </tbody></table>`;
         }
