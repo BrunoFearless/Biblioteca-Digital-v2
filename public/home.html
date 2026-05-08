@@ -69,8 +69,8 @@
             justify-content: center;
         }
         @keyframes fadeInFluid {
-            0% { opacity: 0; transform: translateY(40px) scale(0.95); }
-            60% { opacity: 1; transform: translateY(-8px) scale(1.04); }
+            0% { opacity: 0; transform: translateY(40px) scale(1); }
+            60% { opacity: 1; transform: translateY(-10px) scale(1.04); }
             100% { opacity: 1; transform: translateY(0) scale(1); }
         }
         .welcome-container h1 {
@@ -94,7 +94,7 @@
             font-weight: bold;
             cursor: pointer;
             box-shadow: 0 2px 8px rgba(102,126,234,0.12);
-            transition: background 0.2s, transform 0.2s;
+            transition: background 0.3s, transform 0.3s;
         }
         .btn-entrar:hover {
             background: linear-gradient(90deg, #7c4a21 0%, #a97c50 100%);
@@ -119,7 +119,7 @@
     <script>
         // Função para redirecionar para a página do cliente
         function entrarBiblioteca() {
-            document.body.classList.add('fadeout');
+            // document.body.classList.add('fadeout');
             setTimeout(() => {
                 window.location.href = 'index.html';
             }, 400);
@@ -137,8 +137,8 @@
                 book.style.left = `${Math.random()*95}vw`;
                 book.style.top = `${Math.random()*90}vh`;
                 // Duração e delay aleatórios para animação bagunçada
-                book.style.animationDuration = `${8+Math.random()*8}s`;
-                book.style.animationDelay = `${Math.random()*8}s`;
+                book.style.animationDuration = `${8+Math.random()*50}s`;
+                book.style.animationDelay = `${Math.random()*1}s`;
                 book.style.zIndex = 0;
                 book.textContent = livros[Math.floor(Math.random()*livros.length)];
                 book.style.animationName = 'floatBook';
