@@ -4,148 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bem-vindo à Biblioteca Digital</title>
-    <!--
-        Tela de Boas Vindas super amigável!
-        Aqui o usuário já sente o clima de biblioteca, com um fundo elegante e um botão para entrar no sistema.
-    -->
-    <style>
-        body {
-            min-height: 100vh;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #e7c9a0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        /* Fundo animado com livros flutuando bagunçados */
-        .animated-bg {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            pointer-events: none;
-            z-index: 0;
-        }
-        .book {
-            position: absolute;
-            width: 48px;
-            height: 64px;
-            /* Removendo bordas e fundo, só ícone */
-            background: none;
-            border: none;
-            box-shadow: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.6em;
-            color: #fffbe6;
-            opacity: 0.85;
-        }
-        .book.b2 { color: #fff8e1; }
-        .book.b3 { color: #ffe4b5; }
-        .book.b4 { color: #fffbe6; }
-        /* Animação de movimento circular/flutuante */
-        @keyframes floatBook {
-            0% { transform: translate(0,0) rotate(0deg); }
-            20% { transform: translate(60px, -40px) rotate(12deg); }
-            40% { transform: translate(-80px, 60px) rotate(-18deg); }
-            60% { transform: translate(100px, 100px) rotate(24deg); }
-            80% { transform: translate(-120px, -80px) rotate(-24deg); }
-            100% { transform: translate(0,0) rotate(0deg); }
-        }
-        /* Container sem borda branca, com animação de entrada */
-        .welcome-container {
-            background: none;
-            padding: 48px 36px;
-            text-align: center;
-            max-width: 420px;
-            z-index: 1;
-            position: relative;
-            animation: fadeInFluid 1.2s cubic-bezier(.68,-0.55,.27,1.55);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        @keyframes fadeInFluid {
-            0% { opacity: 0; transform: translateY(40px) scale(1); }
-            60% { opacity: 1; transform: translateY(-10px) scale(1.04); }
-            100% { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        .welcome-container h1 {
-            font-size: 2.6em;
-            color: #fff;
-            margin-bottom: 18px;
-            letter-spacing: 1px;
-        }
-        .welcome-container p {
-            color: #fff;
-            font-size: 1.2em;
-            margin-bottom: 32px;
-        }
-        .btn-entrar {
-            padding: 16px 48px;
-            font-size: 1.3em;
-            border: none;
-            border-radius: 8px;
-            background: linear-gradient(90deg, #a97c50 0%, #7c4a21 100%);
-            color: #fff;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 2px 8px rgba(102,126,234,0.12);
-            transition: background 0.3s, transform 0.3s;
-        }
-        .btn-entrar:hover {
-            background: linear-gradient(90deg, #7c4a21 0%, #a97c50 100%);
-            transform: translateY(-2px) scale(1.04);
-        }
-        .logo {
-            font-size: 3em;
-            margin-bottom: 12px;
-        }
-    </style>
+    <link rel="stylesheet" href="/css/theme.css">
+    <link rel="stylesheet" href="/css/home.css">
 </head>
 <body>
-    <!-- Fundo animado com livros -->
     <div class="animated-bg" id="animatedBg"></div>
-    <div class="welcome-container">
-        <!-- Logo divertida para dar aquele toque especial -->
-        <div class="logo">📚</div>
-        <h1>Bem-vindo à Biblioteca Digital!</h1>
-        <p>Explore, empreste e descubra livros incríveis.<br>Seu portal para o conhecimento começa aqui!</p>
-        <button class="btn-entrar" onclick="entrarBiblioteca()">Entrar</button>
-    </div>
-    <script>
-        // Função para redirecionar para a página do cliente
-        function entrarBiblioteca() {
-            // document.body.classList.add('fadeout');
-            setTimeout(() => {
-                window.location.href = 'index.html';
-            }, 400);
-        }
-
-        // Cria livros animados deslizando pelo fundo
-        function criarLivrosAnimados() {
-            const bg = document.getElementById('animatedBg');
-            const livros = ['📚','📖','📕','📗','📘','📙','📒','📔','📓','📑','📜','📄','📃','📚','📖','📕','📗','📘','📙','📒','📔','📓','📑','📜','📄','📃'];
-            const cores = ['','b2','b3','b4'];
-            for (let i = 0; i < 36; i++) {
-                const book = document.createElement('div');
-                book.className = 'book ' + cores[Math.floor(Math.random()*cores.length)];
-                // Posição inicial aleatória
-                book.style.left = `${Math.random()*95}vw`;
-                book.style.top = `${Math.random()*90}vh`;
-                // Duração e delay aleatórios para animação bagunçada
-                book.style.animationDuration = `${8+Math.random()*50}s`;
-                book.style.animationDelay = `${Math.random()*1}s`;
-                book.style.zIndex = 0;
-                book.textContent = livros[Math.floor(Math.random()*livros.length)];
-                book.style.animationName = 'floatBook';
-                bg.appendChild(book);
-            }
-        }
-        window.addEventListener('DOMContentLoaded', criarLivrosAnimados);
-    </script>
+    <main class="welcome-shell">
+        <section class="welcome-container">
+            <div class="logo">📚</div>
+            <span class="eyebrow">Biblioteca Digital</span>
+            <h1>Seu universo de leitura começa aqui.</h1>
+            <p>Explore, empreste e descubra livros incríveis em uma experiência moderna e envolvente.</p>
+            <button class="btn-entrar" onclick="entrarBiblioteca()">Entrar na biblioteca</button>
+        </section>
+    </main>
+    <script src="/scripts/home.js"></script>
 </body>
 </html>

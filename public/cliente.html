@@ -4,55 +4,63 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Biblioteca Digital - Cliente</title>
-    <link rel="stylesheet" href="/css/cliente.css">
     <link rel="stylesheet" href="/css/theme.css">
+    <link rel="stylesheet" href="/css/cliente.css">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>📚 Biblioteca Digital</h1>
-            <div>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="brand">
+                <span class="brand-icon">📚</span>
+                <div>
+                    <strong>Biblioteca Digital</strong>
+                    <small>Painel do Cliente</small>
+                </div>
+            </div>
+            <div class="user-block">
                 <span class="user-info" id="userInfo">Usuário</span>
                 <button class="logout-btn" onclick="fazerLogout()">Sair</button>
             </div>
-        </header>
+            <nav class="nav-tabs">
+                <button class="nav-btn active" onclick="showSection('catalogo')">📖 Catálogo</button>
+                <button class="nav-btn" onclick="showSection('categorias')">🏷️ Categorias</button>
+                <button class="nav-btn" onclick="showSection('meus-emprestimos')">📚 Meus Empréstimos</button>
+                <button class="nav-btn" onclick="showSection('minhas-reservas')">⭐ Minhas Reservas</button>
+            </nav>
+        </aside>
 
-        <div class="nav-tabs">
-            <button class="nav-btn active" onclick="showSection('catalogo')">📖 Catálogo</button>
-            <button class="nav-btn" onclick="showSection('categorias')">🏷️ Categoria</button>
-            <button class="nav-btn" onclick="showSection('meus-emprestimos')">📚 Meus Empréstimos</button>
-            <button class="nav-btn" onclick="showSection('minhas-reservas')">⭐ Minhas Reservas</button>
-                <!-- Categorias -->
-                <div id="categorias" class="content-section">
-                    <h2 style="color: white; margin-bottom: 20px;">Categorias de Livros</h2>
-                    <div id="categoriasList" style="margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 10px;"></div>
-                    <div id="categoriasContent" class="loading">Selecione uma categoria para ver os livros.</div>
+        <main class="workspace">
+            <section class="workspace-head">
+                <h1>Explore livros e acompanhe sua jornada</h1>
+                <p>Catálogo, categorias, empréstimos e reservas em um só lugar.</p>
+            </section>
+
+            <section id="catalogo" class="content-section active">
+                <div class="search-bar">
+                    <input type="text" id="searchInput" placeholder="Buscar por título, autor..." onkeyup="filtrarLivros()">
+                    <button onclick="filtrarLivros()">🔍 Buscar</button>
                 </div>
-        </div>
+                <div id="catalogoContent" class="loading">Carregando livros...</div>
+            </section>
 
-        <!-- Catálogo -->
-        <div id="catalogo" class="content-section active">
-            <div class="search-bar">
-                <input type="text" id="searchInput" placeholder="Buscar por título, autor..." onkeyup="filtrarLivros()">
-                <button onclick="filtrarLivros()">🔍 Buscar</button>
-            </div>
-            <div id="catalogoContent" class="loading">Carregando livros...</div>
-        </div>
+            <section id="categorias" class="content-section">
+                <h2 class="section-title">Categorias de Livros</h2>
+                <div id="categoriasList" class="categorias-list"></div>
+                <div id="categoriasContent" class="loading">Selecione uma categoria para ver os livros.</div>
+            </section>
 
-        <!-- Meus Empréstimos -->
-        <div id="meus-emprestimos" class="content-section">
-            <h2 style="color: white; margin-bottom: 20px;">Meus Empréstimos</h2>
-            <div id="emprestimosContent" class="loading">Carregando empréstimos...</div>
-        </div>
+            <section id="meus-emprestimos" class="content-section">
+                <h2 class="section-title">Meus Empréstimos</h2>
+                <div id="emprestimosContent" class="loading">Carregando empréstimos...</div>
+            </section>
 
-        <!-- Minhas Reservas -->
-        <div id="minhas-reservas" class="content-section">
-            <h2 style="color: white; margin-bottom: 20px;">Minhas Reservas</h2>
-            <div id="reservasContent" class="loading">Carregando reservas...</div>
-        </div>
+            <section id="minhas-reservas" class="content-section">
+                <h2 class="section-title">Minhas Reservas</h2>
+                <div id="reservasContent" class="loading">Carregando reservas...</div>
+            </section>
+        </main>
     </div>
 
-    <!-- Modal de Confirmação -->
     <div id="modal" class="modal">
         <div class="modal-content">
             <h2 id="modalTitle">Confirme a ação</h2>
@@ -64,590 +72,12 @@
         </div>
     </div>
 
-    <script>
-        // Corrigir tipo de usuário salvo no sessionStorage
-        (function() {
-            let usuario = sessionStorage.getItem('usuario');
-            if (usuario) {
-                usuario = JSON.parse(usuario);
-                // Se não houver tipo salvo, tentar recuperar do localStorage (retrocompatibilidade)
-                if (!usuario.tipo) {
-                    usuario.tipo = 'aluno'; // padrão
-                    sessionStorage.setItem('usuario', JSON.stringify(usuario));
-                }
-            }
-        })();
-        // Usuário atual
-        let usuarioAtual = JSON.parse(sessionStorage.getItem('usuario'));
-        let acaoAtual = null;
-        let livroAtual = null;
-
-        if (!usuarioAtual || sessionStorage.getItem('modo') !== 'cliente') {
-            delayedNavigate('/index.html');
-        }
-
-        document.getElementById('userInfo').textContent = `Olá, ${usuarioAtual.nome}!`;
-
-        // Dados locais
-        let livrosLocal = [];
-        let emprestimosLocal = [];
-        let reservasLocal = [];
-
-        // Função para carregar empréstimos do servidor
-        async function carregarEmprestimosDoServidor() {
-            try {
-                const emprestimos = await fetch('/api/emprestimos').then(r => r.json());
-                const meusEmprestimos = emprestimos.filter(e => e.usuario_id === usuarioAtual.id);
-                emprestimosLocal = meusEmprestimos;
-                localStorage.setItem(`emprestimos_${usuarioAtual.id}`, JSON.stringify(meusEmprestimos));
-                return meusEmprestimos;
-            } catch (e) {
-                console.error('Erro ao carregar empréstimos:', e);
-                // Fallback para localStorage
-                emprestimosLocal = JSON.parse(localStorage.getItem(`emprestimos_${usuarioAtual.id}`) || '[]');
-                return emprestimosLocal;
-            }
-        }
-
-        // Função para carregar reservas do servidor
-        async function carregarReservasDoServidor() {
-            try {
-                const reservas = await fetch('/api/reservas').then(r => r.json());
-                const minhasReservas = reservas.filter(r => r.usuario_id === usuarioAtual.id);
-                reservasLocal = minhasReservas;
-                localStorage.setItem(`reservas_${usuarioAtual.id}`, JSON.stringify(minhasReservas));
-                return minhasReservas;
-            } catch (e) {
-                console.error('Erro ao carregar reservas:', e);
-                // Fallback para localStorage
-                reservasLocal = JSON.parse(localStorage.getItem(`reservas_${usuarioAtual.id}`) || '[]');
-                return reservasLocal;
-            }
-        }
-
-        function showSection(section) {
-            const current = document.querySelector('.content-section.active');
-            const activate = () => {
-                document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active'));
-                document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
-                const target = document.getElementById(section);
-                if (target) {
-                    target.classList.add('active', 'section-enter');
-                    setTimeout(() => target.classList.remove('section-enter'), 600);
-                }
-                // mark nav button active (best-effort)
-                document.querySelectorAll('.nav-btn').forEach(btn => {
-                    const onclick = btn.getAttribute('onclick') || '';
-                    if (onclick.includes(section)) btn.classList.add('active');
-                });
-                if (section === 'catalogo') loadCatalogo();
-                else if (section === 'meus-emprestimos') carregarEmprestimosDoServidor().then(() => loadMeusEmprestimos());
-                else if (section === 'minhas-reservas') carregarReservasDoServidor().then(() => loadMinhasReservas());
-                else if (section === 'categorias') loadCategorias();
-            };
-        async function loadCategorias() {
-            try {
-                const livros = await fetch('/api/livros').then(r => r.json());
-                livrosLocal = livros;
-                // Extrair categorias únicas
-                const categorias = [...new Set(livros.map(l => l.genero).filter(Boolean))];
-                let catHtml = '';
-                categorias.forEach(cat => {
-                    const catEsc = encodeURIComponent(cat);
-                    catHtml += `<button class="nav-btn" style="background: #C08A4A; color: white;" onclick="mostrarLivrosPorCategoria(decodeURIComponent('${catEsc}'))">${cat}</button>`;
-                });
-                document.getElementById('categoriasList').innerHTML = catHtml;
-                document.getElementById('categoriasContent').innerHTML = '<div class="empty-state">Selecione uma categoria para ver os livros.</div>';
-            } catch (error) {
-                document.getElementById('categoriasContent').innerHTML = '<div class="empty-state">Erro ao carregar categorias</div>';
-            }
-        }
-
-        window.mostrarLivrosPorCategoria = function(categoria) {
-            // Normalizar categoria e genero para evitar problemas de maiúsculas/minúsculas e espaços
-            const normalizar = str => (str || '').trim().toLowerCase();
-            const livros = livrosLocal.filter(l => normalizar(l.genero) === normalizar(categoria));
-            let html = '<div class="books-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">';
-            if (livros.length === 0) {
-                html = '<div class="empty-state">Nenhum livro nesta categoria</div>';
-            } else {
-                livros.forEach(livro => {
-                    let capaUrl = '';
-                    if (livro.capa_url) {
-                        let raw = String(livro.capa_url).replace(/\\/g, '/');
-                        raw = raw.replace(/^\/+/, '');
-                        capaUrl = raw.startsWith('http') ? raw : ('/' + raw);
-                    }
-                    html += `
-                        <div class="book-card" style="display: flex; flex-direction: column; height: 100%; min-width: 220px;">
-                            <div class="book-cover" style="${capaUrl ? `background-image: url('${capaUrl}'); background-size: cover; background-position: center;` : `background: linear-gradient(135deg, ${getGradientColor(livro.titulo)} 0%, ${getGradientColor(livro.autor)} 100%);`} width: 100%; height: 180px; border-radius: 10px 10px 0 0;">
-                                ${!capaUrl ? '📚' : ''}
-                            </div>
-                            <div class="book-details" style="flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
-                                <div>
-                                    <div class="book-title">${livro.titulo}</div>
-                                    <div class="book-author">${livro.autor}</div>
-                                    <div class="book-meta">
-                                        <span>${livro.genero}</span>
-                                        <span>${livro.ano_publicacao}</span>
-                                    </div>
-                                </div>
-                                <div class="stock-info">
-                                    ${livro.estoque > 0 
-                                        ? `⏱️ ${livro.estoque} disponível` 
-                                        : '❌ Indisponível'}
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                });
-            }
-            html += '</div>';
-            document.getElementById('categoriasContent').innerHTML = html;
-        }
-
-            if (current && current.id !== section) {
-                current.classList.add('section-exit');
-                setTimeout(() => {
-                    current.classList.remove('active', 'section-exit');
-                    activate();
-                }, 450);
-            } else {
-                activate();
-            }
-        }
-
-        async function loadCatalogo() {
-            try {
-                const livros = await fetch('/api/livros').then(r => r.json());
-                livrosLocal = livros;
-                renderizarLivros(livros);
-            } catch (error) {
-                document.getElementById('catalogoContent').innerHTML = '<div class="empty-state">Erro ao carregar catálogo</div>';
-            }
-        }
-
-        function filtrarLivros() {
-            const termo = document.getElementById('searchInput').value.toLowerCase();
-            const filtrados = livrosLocal.filter(l => 
-                l.titulo.toLowerCase().includes(termo) ||
-                l.autor.toLowerCase().includes(termo) ||
-                l.genero.toLowerCase().includes(termo)
-            );
-            renderizarLivros(filtrados);
-        }
-
-        function renderizarLivros(livros) {
-            console.log('Renderizando livros:', livros.length);
-            console.log('Primeiro livro:', livros[0]);
-            
-            let html = '<div class="books-grid">';
-
-            if (livros.length === 0) {
-                html = '<div class="empty-state">Nenhum livro encontrado</div>';
-            } else {
-                livros.forEach(livro => {
-                    console.log(`Processando livro ID=${livro.id} - ${livro.titulo}`);
-                    const jaPegueiEmprestado = emprestimosLocal.some(e => e.livro_id === livro.id && !e.devolvido);
-                    const jaReservei = reservasLocal.some(r => r.livro_id === livro.id && r.status === 'ativa');
-                    const capaUrl = (function(){
-                        if (!livro.capa_url) return null;
-                        let raw = String(livro.capa_url).replace(/\\/g, '/');
-                        raw = raw.replace(/^\/+/, '');
-                        return raw.startsWith('http') ? raw : ('/' + raw);
-                    })();
-
-                    html += `
-                        <div class="book-card">
-                            <div class="book-cover" style="${capaUrl ? `background-image: url('${capaUrl}'); background-size: cover; background-position: center;` : `background: linear-gradient(135deg, ${getGradientColor(livro.titulo)} 0%, ${getGradientColor(livro.autor)} 100%);`}">
-                                ${!capaUrl ? '📚' : ''}
-                            </div>
-                            <div class="book-details">
-                                <div class="book-title">${livro.titulo}</div>
-                                <div class="book-author">${livro.autor}</div>
-                                <div class="book-meta">
-                                    <span>${livro.genero}</span>
-                                    <span>${livro.ano_publicacao}</span>
-                                </div>
-                                <div class="stock-info">
-                                    ${livro.estoque > 0 
-                                        ? `⏱️ ${livro.estoque} disponível` 
-                                        : '❌ Indisponível'}
-                                </div>
-                                <div class="action-buttons">
-                                    <button class="btn-action btn-borrow btn-success" 
-                                            onclick="console.log('Clicado em Pegar - Livro:', ${livro.id}); abrirModal('borrow', ${livro.id}, '${livro.titulo.replace(/'/g, "\\'")}')"
-                                            ${jaPegueiEmprestado || livro.estoque === 0 ? 'disabled' : ''}>
-                                        ${jaPegueiEmprestado ? '✓ Pegado' : 'Pegar'}
-                                    </button>
-                                    <button class="btn-action btn-reserve btn-info" 
-                                            onclick="console.log('Clicado em Reservar - Livro:', ${livro.id}); abrirModal('reserve', ${livro.id}, '${livro.titulo.replace(/'/g, "\\'")}')"
-                                            ${jaReservei ? 'disabled' : ''}>
-                                        ${jaReservei ? '✓ Reservado' : 'Reservar'}
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                });
-            }
-
-            html += '</div>';
-            document.getElementById('catalogoContent').innerHTML = html;
-        }
-
-        async function loadMeusEmprestimos() {
-    try {
-        const emprestimos = await fetch('/api/emprestimos').then(r => r.json());
-        const meus = emprestimos.filter(e => e.usuario_id === usuarioAtual.id);
-        let html = '';
-        if (meus.length === 0) {
-            html = '<div class="empty-state">Você não possui empréstimos no momento</div>';
-        } else {
-            html = `
-                <table class="emprestimos-table">
-                    <thead>
-                        <tr>
-                            <th>Livro</th>
-                            <th>Data Empréstimo</th>
-                            <th>Data Devolução</th>
-                            <th>Prazo Restante</th>
-                            <th>Status</th>
-                            <th>Ação</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${meus.map(e => {
-                            const hoje = new Date();
-                            const dataDev = new Date(e.data_devolucao);
-                            const diffMs = dataDev - hoje;
-                            const diffDias = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-                            let prazoStr = '';
-                            if (diffDias > 0) {
-                                prazoStr = `${diffDias} dia(s)`;
-                            } else if (diffDias === 0) {
-                                prazoStr = 'Último dia!';
-                            } else {
-                                prazoStr = `<span style=\"color:#e74c3c;font-weight:bold;\">Expirado (${Math.abs(diffDias)} dia(s))</span>`;
-                            }
-                            return `
-                                <tr>
-                                    <td>${e.livro_id}</td>
-                                    <td>${new Date(e.data_emprestimo).toLocaleDateString()}</td>
-                                    <td>${new Date(e.data_devolucao).toLocaleDateString()}</td>
-                                    <td>${prazoStr}</td>
-                                    <td>
-                                        <span class="status-badge ${e.devolvido ? 'status-devolvido' : 'status-ativo'}">
-                                            ${e.devolvido ? 'Devolvido' : 'Ativo'}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        ${!e.devolvido ? `<button class="btn-action btn-danger" onclick="abrirModal('return', ${e.id}, '')">Devolver</button>` : '-'}
-                                    </td>
-                                </tr>
-                            `;
-                        }).join('')}
-                    </tbody>
-                </table>
-            `;
-        }
-        document.getElementById('emprestimosContent').innerHTML = html;
-    } catch (error) {
-        document.getElementById('emprestimosContent').innerHTML = '<div class="empty-state">Erro ao carregar empréstimos</div>';
-    }
-}
-
-        function abrirModal(acao, livroId, titulo) {
-            acaoAtual = acao;
-            livroAtual = livroId;
-
-            // Definir limites conforme tipo de usuário
-            const tipo = (usuarioAtual.tipo || '').toLowerCase();
-            let prazo = 7, maxLivros = 3, label = 'aluno';
-            if (tipo === 'professor') {
-                prazo = 15;
-                maxLivros = 6;
-                label = 'professor';
-            }
-            // Contar quantos empréstimos ativos o usuário tem
-            const emprestimosAtivos = emprestimosLocal.filter(e => !e.devolvido).length;
-
-            if (acao === 'borrow') {
-                document.getElementById('modalTitle').textContent = 'Pegar Livro Emprestado';
-                document.getElementById('modalMessage').textContent = `Deseja pegar "${titulo}" emprestado?\n\nTipo: ${label.charAt(0).toUpperCase() + label.slice(1)}\nPrazo: ${prazo} dias\nLimite: ${maxLivros} livros simultâneos.\nVocê já possui ${emprestimosAtivos} empréstimo(s) ativo(s).`;
-                // Bloquear se exceder limite
-                if (emprestimosAtivos >= maxLivros) {
-                    setTimeout(()=>{
-                        alert(`Limite de empréstimos atingido para ${label}.\nVocê só pode pegar até ${maxLivros} livros ao mesmo tempo.`);
-                        fecharModal();
-                    }, 100);
-                    return;
-                }
-            } else if (acao === 'reserve') {
-                document.getElementById('modalTitle').textContent = 'Reservar Livro';
-                document.getElementById('modalMessage').textContent = `Deseja reservar "${titulo}"?`;
-            } else if (acao === 'return') {
-                document.getElementById('modalTitle').textContent = 'Devolver Livro';
-                document.getElementById('modalMessage').textContent = `Deseja devolver este livro?`;
-            }
-
-            document.getElementById('modal').classList.add('active');
-        }
-
-        function fecharModal() {
-            document.getElementById('modal').classList.remove('active');
-        }
-
-        function confirmarAcao() {
-            console.log('=== CONFIRMAR AÇÃO ===');
-            console.log('Ação:', acaoAtual);
-            console.log('Livro ID:', livroAtual);
-            console.log('Usuário:', usuarioAtual);
-            console.log('Usuário ID:', usuarioAtual?.id);
-            
-            if (!usuarioAtual || !usuarioAtual.id) {
-                console.error('ERRO: usuarioAtual ou usuarioAtual.id não definido!');
-                alert('ERRO: Usuário não autenticado. Faça login novamente.');
-                return;
-            }
-
-            if (!livroAtual) {
-                console.error('ERRO: livroAtual não definido!');
-                alert('ERRO: Livro não selecionado.');
-                fecharModal();
-                return;
-            }
-            
-            if (acaoAtual === 'borrow') {
-                // Definir limites conforme tipo de usuário
-                const tipo = (usuarioAtual.tipo || '').toLowerCase();
-                let prazo = 7, maxLivros = 3, label = 'aluno';
-                if (tipo === 'professor') {
-                    prazo = 15;
-                    maxLivros = 6;
-                    label = 'professor';
-                }
-                // Contar quantos empréstimos ativos o usuário tem
-                const emprestimosAtivos = emprestimosLocal.filter(e => !e.devolvido).length;
-                if (emprestimosAtivos >= maxLivros) {
-                    alert(`Limite de empréstimos atingido para ${label}.\nVocê só pode pegar até ${maxLivros} livros ao mesmo tempo.`);
-                    fecharModal();
-                    return;
-                }
-                console.log('Iniciando empréstimo de livro...');
-                const dataDevolucao = new Date(Date.now() + prazo * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-                const dados = {
-                    usuario_id: usuarioAtual.id,
-                    livro_id: livroAtual,
-                    data_emprestimo: new Date().toISOString().split('T')[0],
-                    data_devolucao: dataDevolucao
-                };
-                
-                console.log('Dados a enviar:', JSON.stringify(dados, null, 2));
-                
-                fetch('/api/emprestimos', {
-                    method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(dados)
-                })
-                .then(r => {
-                    console.log('Resposta recebida. Status:', r.status);
-                    console.log('Response headers:', r.headers);
-                    return r.json().then(data => ({ status: r.status, data: data }));
-                })
-                .then(({ status, data }) => {
-                    console.log('Resposta JSON:', data);
-                    if (status >= 200 && status < 300) {
-                        console.log('✅ Empréstimo criado com sucesso no banco!');
-                        alert('✅ Livro pego com sucesso!');
-                        fecharModal();
-                        // Recarregar dados do servidor para sincronizar
-                        carregarEmprestimosDoServidor().then(() => {
-                            loadCatalogo();
-                        });
-                    } else {
-                        console.error('❌ Erro do servidor:', data);
-                        throw new Error(data.error || 'Erro ao pegar livro');
-                    }
-                })
-                .catch(e => {
-                    console.error('❌ Erro no fetch:', e);
-                    alert('❌ Erro: ' + e.message + '\n\nTente novamente.');
-                    fecharModal();
-                });
-            }
-            else if (acaoAtual === 'reserve') {
-                console.log('Iniciando reserva de livro...');
-                const dados = {
-                    usuario_id: usuarioAtual.id,
-                    livro_id: livroAtual
-                };
-                
-                console.log('Dados a enviar:', JSON.stringify(dados, null, 2));
-                
-                fetch('/api/reservas', {
-                    method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(dados)
-                })
-                .then(r => {
-                    console.log('Resposta recebida. Status:', r.status);
-                    return r.json().then(data => ({ status: r.status, data: data }));
-                })
-                .then(({ status, data }) => {
-                    console.log('Resposta JSON:', data);
-                    if (status >= 200 && status < 300) {
-                        console.log('✅ Reserva criada com sucesso no banco!');
-                        alert('✅ Livro reservado com sucesso!');
-                        fecharModal();
-                        // Recarregar dados do servidor para sincronizar
-                        carregarReservasDoServidor().then(() => {
-                            loadCatalogo();
-                        });
-                    } else {
-                        console.error('❌ Erro do servidor:', data);
-                        throw new Error(data.error || 'Erro ao reservar livro');
-                    }
-                })
-                .catch(e => {
-                    console.error('❌ Erro no fetch:', e);
-                    alert('❌ Erro: ' + e.message + '\n\nTente novamente.');
-                    fecharModal();
-                });
-            } 
-            else if (acaoAtual === 'return') {
-                console.log('Iniciando devolução de livro...');
-                const emprestimoId = livroAtual;
-                
-                fetch(`/api/emprestimos/${emprestimoId}/devolver`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' }
-                })
-                .then(r => {
-                    console.log('Resposta recebida. Status:', r.status);
-                    return r.json().then(data => ({ status: r.status, data: data }));
-                })
-                .then(({ status, data }) => {
-                    console.log('Resposta JSON:', data);
-                    if (status >= 200 && status < 300) {
-                        console.log('✅ Devolução marcada com sucesso!');
-                        alert('✅ Livro devolvido com sucesso!');
-                        fecharModal();
-                        loadMeusEmprestimos();
-                    } else {
-                        console.error('❌ Erro do servidor:', data);
-                        throw new Error(data.error || 'Erro ao devolver livro');
-                    }
-                })
-                .catch(e => {
-                    console.error('❌ Erro no fetch:', e);
-                    alert('❌ Erro: ' + e.message);
-                    fecharModal();
-                });
-            }
-        }
-
-
-        async function cancelarReserva(id) {
-            try {
-                const resp = await fetch(`/api/reservas/${id}/cancelar`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' }
-                });
-                const data = await resp.json();
-                if (resp.ok) {
-                    alert('❌ Reserva cancelada com sucesso!');
-                    await carregarReservasDoServidor();
-                    loadMinhasReservas();
-                } else {
-                    throw new Error(data.error || 'Erro ao cancelar reserva');
-                }
-            } catch (e) {
-                alert('Erro ao cancelar reserva: ' + e.message);
-            }
-        }
-
-        // Função para renderizar reservas do usuário
-        function loadMinhasReservas() {
-            let html = '';
-            if (!reservasLocal || reservasLocal.length === 0) {
-                html = '<div class="empty-state">Você não possui reservas no momento</div>';
-            } else {
-                html = `
-                    <table class="emprestimos-table">
-                        <thead>
-                            <tr>
-                                <th>Livro</th>
-                                <th>Data Reserva</th>
-                                <th>Status</th>
-                                <th>Ação</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${reservasLocal.map(r => {
-                                return `
-                                    <tr>
-                                        <td>${r.livro_id}</td>
-                                        <td>${r.data_reserva ? new Date(r.data_reserva).toLocaleDateString() : '-'}</td>
-                                        <td>
-                                            <span class="status-badge ${r.status === 'ativa' ? 'status-ativo' : 'status-devolvido'}">
-                                                ${r.status === 'ativa' ? 'Ativa' : (r.status === 'cancelada' ? 'Cancelada' : r.status)}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            ${r.status === 'ativa' ? `<button class="btn-action btn-danger" onclick="cancelarReserva(${r.id})">Cancelar</button>` : '-'}
-                                        </td>
-                                    </tr>
-                                `;
-                            }).join('')}
-                        </tbody>
-                    </table>
-                `;
-            }
-            document.getElementById('reservasContent').innerHTML = html;
-        }
-
-        function getGradientColor(text) {
-            const colors = ['#E74C3C', '#3498DB', '#2ECC71', '#F39C12', '#9B59B6', '#1ABC9C'];
-            let hash = 0;
-            for (let i = 0; i < text.length; i++) {
-                hash = text.charCodeAt(i) + ((hash << 5) - hash);
-            }
-            return colors[Math.abs(hash) % colors.length];
-        }
-
-        function fazerLogout() {
-            sessionStorage.clear();
-            delayedNavigate('/index.html');
-        }
-
-        // Carregar dados ao iniciar
-        carregarEmprestimosDoServidor();
-        carregarReservasDoServidor();
-        loadCatalogo();
-    </script>
-    <script>
-        // Page overlay + delayed navigation (cliente)
-        (function(){
-            const overlay = document.createElement('div');
-            overlay.id = 'pageOverlay';
-            document.addEventListener('DOMContentLoaded', ()=>{
-                document.body.appendChild(overlay);
-                requestAnimationFrame(()=>{
-                    overlay.classList.add('visible');
-                    setTimeout(()=> overlay.classList.remove('visible'), 20);
-                });
-            });
-
-            window.delayedNavigate = function(url){
-                overlay.classList.add('visible');
-                setTimeout(()=> window.location.href = url, 700);
-            };
-        })();
-    </script>
+    <script src="/scripts/cliente/overlay.js"></script>
+    <script src="/scripts/cliente/core.js"></script>
+    <script src="/scripts/cliente/catalogo.js"></script>
+    <script src="/scripts/cliente/historico.js"></script>
+    <script src="/scripts/cliente/modal.js"></script>
+    <script src="/scripts/cliente/navigation.js"></script>
+    <script src="/scripts/cliente/app.js"></script>
 </body>
 </html>
