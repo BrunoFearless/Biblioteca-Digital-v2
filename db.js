@@ -133,6 +133,71 @@ async function initializeDatabase() {
       );
     `);
 
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS clubes (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        nome VARCHAR(255) NOT NULL,
+        descricao TEXT,
+        livro_id INT,
+        criador_id INT NOT NULL,
+        capa_url VARCHAR(500),
+        meta_leitura TEXT NULL,
+        livro_data_inicio TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (livro_id) REFERENCES livros(id) ON DELETE SET NULL,
+        FOREIGN KEY (criador_id) REFERENCES usuarios(id) ON DELETE CASCADE
+      );
+    `);
+
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS clubes_membros (
+        clube_id INT NOT NULL,
+        usuario_id INT NOT NULL,
+        pagina_atual INT DEFAULT 0,
+        data_adesao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (clube_id, usuario_id),
+        FOREIGN KEY (clube_id) REFERENCES clubes(id) ON DELETE CASCADE,
+        FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+      );
+    `);
+
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS clubes_votos (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        clube_id INT NOT NULL,
+        livro_id INT NOT NULL,
+        usuario_id INT NOT NULL,
+        UNIQUE KEY unique_voto (clube_id, usuario_id),
+        FOREIGN KEY (clube_id) REFERENCES clubes(id) ON DELETE CASCADE,
+        FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+      );
+    `);
+
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS clubes_citacoes (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        clube_id INT NOT NULL,
+        usuario_id INT NOT NULL,
+        texto TEXT NOT NULL,
+        data_postagem TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (clube_id) REFERENCES clubes(id) ON DELETE CASCADE,
+        FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+      );
+    `);
+
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS clubes_mensagens (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        clube_id INT NOT NULL,
+        usuario_id INT NOT NULL,
+        mensagem TEXT NOT NULL,
+        foi_editada BOOLEAN DEFAULT FALSE,
+        data_envio TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (clube_id) REFERENCES clubes(id) ON DELETE CASCADE,
+        FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+      );
+    `);
+
     console.log("Tabelas verificadas/criadas com sucesso.");
   } catch (error) {
     console.error("Erro na inicialização da base de dados:", error);

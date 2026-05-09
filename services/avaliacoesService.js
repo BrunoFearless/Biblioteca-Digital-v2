@@ -62,7 +62,7 @@ export async function obterRankingLeitores() {
     try {
         // Consulta robusta que conta apenas empréstimos devolvidos
         const [rows] = await connection.execute(
-          `SELECT u.nome, COUNT(e.id) as livros_lidos
+          `SELECT u.id, u.nome, COUNT(e.id) as livros_lidos
            FROM usuarios u
            INNER JOIN emprestimos e ON u.id = e.usuario_id
            WHERE e.devolvido = 1

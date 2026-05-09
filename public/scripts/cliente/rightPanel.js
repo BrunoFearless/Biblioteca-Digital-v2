@@ -68,11 +68,11 @@ async function updateActivityFeed() {
         }
 
         container.innerHTML = atividade.map(a => `
-            <div class="friend-item" onclick="abrirModalDetalhes(${a.livro_id})" style="cursor: pointer;">
-                <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(a.usuario_nome)}&background=random&color=fff" alt="${a.usuario_nome}">
+            <div class="friend-item">
+                <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(a.usuario_nome)}&background=random&color=fff" alt="${a.usuario_nome}" onclick="abrirPerfilPublico(${a.usuario_id})" style="cursor: pointer;">
                 <div class="friend-info">
-                    <strong>${a.usuario_nome}</strong>
-                    <p>Avaliou <i>"${a.livro_titulo}"</i></p>
+                    <strong onclick="abrirPerfilPublico(${a.usuario_id})" style="cursor: pointer;">${a.usuario_nome}</strong>
+                    <p onclick="abrirModalDetalhes(${a.livro_id})" style="cursor: pointer;">Avaliou <i>"${a.livro_titulo}"</i></p>
                     <div class="friend-activity">
                         ${'★'.repeat(a.nota)}${'☆'.repeat(5-a.nota)} 
                         <span class="time">${new Date(a.data_avaliacao).toLocaleDateString()}</span>
@@ -91,7 +91,7 @@ async function updateTopLeitores() {
         const ranking = await fetch('/api/avaliacoes/ranking').then(r => r.json());
         
         container.innerHTML = ranking.map((r, index) => `
-            <div class="reader-badge">
+            <div class="reader-badge" onclick="abrirPerfilPublico(${r.id})" style="cursor: pointer;">
                 <span class="reader-rank">#${index + 1}</span>
                 <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(r.nome)}&background=random&color=fff" style="width: 28px; height: 28px; border-radius: 50%;">
                 <span class="reader-name">${r.nome}</span>

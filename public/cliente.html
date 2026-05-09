@@ -26,6 +26,7 @@
                 <button class="nav-btn" onclick="showSection('meus-favoritos')" title="Favoritos"><i class="ph ph-heart"></i></button>
                 <button class="nav-btn" onclick="showSection('meus-emprestimos')" title="Meus Empréstimos"><i class="ph ph-book-open"></i></button>
                 <button class="nav-btn" onclick="showSection('minhas-reservas')" title="Minhas Reservas"><i class="ph ph-bookmark-simple"></i></button>
+                <button class="nav-btn" onclick="showSection('clubes')" title="Os Meus Clubes"><i class="ph ph-users-three"></i></button>
                 <button class="nav-btn" onclick="showSection('meu-perfil')" title="O Meu Perfil"><i class="ph ph-user-circle"></i></button>
             </nav>
             <div class="sidebar-bottom">
@@ -148,6 +149,17 @@
                     <h2>Minhas Reservas</h2>
                 </div>
                 <div id="reservasContent" class="loading">Carregando reservas...</div>
+            </section>
+
+            <section id="clubes" class="content-section">
+                <div class="section-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <h2>Os Meus Clubes</h2>
+                    <button class="btn-primary" onclick="abrirModalCriarClube()"><i class="ph ph-plus"></i> Criar Clube</button>
+                </div>
+                
+                <div class="clubes-container" id="clubesLista" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; margin-top: 20px;">
+                    <!-- Clubes injetados via JS -->
+                </div>
             </section>
         </main>
 
@@ -355,7 +367,7 @@
     </div>
 
     <!-- Super Modal Perfil Público (Dashboard) -->
-    <div id="modalPerfilPublico" class="modal" style="display: none; align-items: center; justify-content: center; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px);">
+    <div id="modalPerfilPublico" class="modal" style="display: none; align-items: center; justify-content: center; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); z-index: 5000;">
         <div class="modal-content glass-card" style="max-width: 1000px; width: 90vw; height: 85vh; padding: 0; border-radius: 28px; overflow: hidden; display: flex; flex-direction: column; border: 1px solid rgba(255,255,255,0.4); box-shadow: 0 25px 50px rgba(0,0,0,0.15);">
             <!-- Header do Modal (Banner Castanho) -->
             <div style="height: 150px; background: #eae6df; position: relative; display: flex; align-items: flex-end; padding: 30px; border-bottom: 1px solid rgba(0,0,0,0.05);">
@@ -433,6 +445,131 @@
         </div>
     </div>
 
+    <!-- Modal Criar Clube -->
+    <div id="modalCriarClube" class="modal">
+        <div class="modal-content glass-card" style="max-width: 500px; padding: 30px; border-radius: 24px; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); margin: 0;">
+            <h2 style="font-family: var(--font-heading); margin-bottom: 20px;">Criar Novo Clube</h2>
+            <form id="formCriarClube" onsubmit="criarNovoClube(event)">
+                <input type="text" id="clubeNome" placeholder="Nome do Clube" class="glass-input" required style="margin-bottom: 15px;">
+                <textarea id="clubeDescricao" placeholder="Descrição do que se trata este clube..." class="glass-input" style="margin-bottom: 15px; min-height: 80px;"></textarea>
+                
+                <div class="file-upload-wrapper" style="margin-bottom: 15px; text-align: left;">
+                    <label for="clubeCapaFile" style="display: block; font-size: 0.75rem; font-weight: 600; margin-bottom: 5px; color: var(--text-secondary);">Capa do Clube:</label>
+                    <input type="file" id="clubeCapaFile" accept="image/*" style="font-size: 0.75rem; width: 100%;">
+                </div>
+
+                <label style="display: block; font-size: 0.8rem; margin-bottom: 8px; color: var(--text-secondary);">Livro do Mês (Opcional):</label>
+                <select id="clubeLivroId" class="glass-input" style="margin-bottom: 20px;">
+                    <option value="">Nenhum livro selecionado</option>
+                    <!-- Preenchido via JS -->
+                </select>
+
+                <div class="modal-buttons">
+                    <button type="submit" class="btn-confirm-glass">Criar Clube</button>
+                    <button type="button" class="btn-cancel-glass" onclick="fecharModalCriarClube()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Editar Clube -->
+    <div id="modalEditarClube" class="modal">
+        <div class="modal-content glass-card" style="max-width: 500px; padding: 30px; border-radius: 24px; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); margin: 0;">
+            <h2 style="font-family: var(--font-heading); margin-bottom: 20px;">Editar Clube</h2>
+            <form id="formEditarClube" onsubmit="confirmarEdicaoClube(event)">
+                <input type="hidden" id="editClubeId">
+                <input type="text" id="editClubeNome" placeholder="Nome do Clube" class="glass-input" required style="margin-bottom: 15px;">
+                <textarea id="editClubeDescricao" placeholder="Descrição..." class="glass-input" style="margin-bottom: 15px; min-height: 80px;"></textarea>
+                
+                <div class="file-upload-wrapper" style="margin-bottom: 15px; text-align: left;">
+                    <label for="editClubeCapaFile" style="display: block; font-size: 0.75rem; font-weight: 600; margin-bottom: 5px; color: var(--text-secondary);">Mudar Capa (Opcional):</label>
+                    <input type="file" id="editClubeCapaFile" accept="image/*" style="font-size: 0.75rem; width: 100%;">
+                </div>
+
+                <label style="display: block; font-size: 0.8rem; margin-bottom: 8px; color: var(--text-secondary);">Livro do Mês:</label>
+                <select id="editClubeLivroId" class="glass-input" style="margin-bottom: 20px;"></select>
+
+                <div class="modal-buttons">
+                    <button type="submit" class="btn-confirm-glass">Salvar Alterações</button>
+                    <button type="button" class="btn-cancel-glass" onclick="fecharModalEditarClube()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Detalhes e Chat do Clube -->
+    <div id="modalClubeChat" class="modal">
+        <div class="modal-content glass-card" style="width: 100vw; height: 100vh; max-width: none; border-radius: 0; padding: 0; display: flex; flex-direction: column; position: fixed; top: 0; left: 0; margin: 0; border: none;">
+            <div class="clube-header" style="padding: 15px 30px; background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 20px;">
+                    <button class="btn-mini-action" onclick="fecharModalClubeChat()" style="background: rgba(0,0,0,0.05); color: var(--text-primary);"><i class="ph ph-arrow-left"></i></button>
+                    <div>
+                        <h2 id="chatClubeNome" style="font-family: var(--font-heading); font-size: 1.4rem; color: var(--text-primary); margin: 0;">Nome do Clube</h2>
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <span id="chatClubeLivro" style="font-size: 0.8rem; color: var(--text-secondary); opacity: 0.8;">A ler: ---</span>
+                            <div id="metaProgressoContainer" style="display: none; align-items: center; gap: 10px;">
+                                <div class="reading-progress-bar"><div id="metaProgressoFill" class="reading-progress-fill" style="width: 0%;"></div></div>
+                                <span id="metaDesc" style="font-size: 0.7rem; color: var(--text-secondary); font-weight: 500;">0%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 15px; align-items: center;">
+                    <button class="btn-mini-action" onclick="abrirModalVotacao()" title="Votar no próximo livro" style="background: #9b59b6; color: white;"><i class="ph ph-hand-palm"></i></button>
+                    <button class="btn-mini-action" onclick="configurarMeta()" title="Definir Meta" id="btnConfigMeta" style="display: none;"><i class="ph ph-target"></i></button>
+                    <button class="btn-cancel-glass" style="border-color: rgba(255,71,87,0.3); color: #ff4757; font-size: 0.8rem; padding: 8px 18px; border-radius: 12px;" onclick="abandonarClube()">
+                        <i class="ph ph-door-open"></i> Sair do Clube
+                    </button>
+                </div>
+            </div>
+            
+            <div style="flex: 1; display: grid; grid-template-columns: 1fr 300px; overflow: hidden;">
+                <!-- Área de Chat -->
+                <div style="display: flex; flex-direction: column; background: rgba(255,255,255,0.02); position: relative;">
+                    <!-- Fundo decorativo suave -->
+                    <div style="position: absolute; inset: 0; background: url('https://www.transparenttextures.com/patterns/cubes.png'); opacity: 0.03; pointer-events: none;"></div>
+                    
+                    <div id="chatMensagens" style="flex: 1; overflow-y: auto; padding: 40px; display: flex; flex-direction: column; gap: 5px; position: relative; z-index: 1;">
+                        <!-- Mensagens injetadas via JS -->
+                    </div>
+                    <div style="padding: 20px; border-top: 1px solid #f0f0f0;">
+                        <div class="ai-input-group" style="background: #f9f9f9; flex: 1;">
+                            <input type="text" id="chatInput" placeholder="Escreva a sua mensagem..." onkeyup="if(event.key === 'Enter') enviarMensagemClube()">
+                            <button onclick="enviarMensagemClube()"><i class="ph ph-paper-plane-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Sidebar do Clube -->
+                <div style="background: #fbfbf9; border-left: 1px solid #f0f0f0; padding: 25px; overflow-y: auto;">
+                    <div class="sidebar-section-title">Membros</div>
+                    <div id="clubeMembrosLista" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 30px;">
+                        <!-- Membros injetados via JS -->
+                    </div>
+
+                    <div class="sidebar-section-title">O Meu Progresso</div>
+                    <div style="background: white; padding: 15px; border-radius: 16px; border: 1px solid #eee; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between;">
+                        <span style="font-size: 0.8rem; color: #6e6b66;">Página Atual:</span>
+                        <input type="number" id="inputPaginaAtual" value="0" min="0" onchange="atualizarMeuProgresso()" style="width: 70px; padding: 8px; border-radius: 10px; border: 1px solid #ddd; font-size: 0.9rem; text-align: center; outline: none; transition: border 0.3s;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='#ddd'">
+                    </div>
+
+                    <div class="sidebar-section-title">
+                        Citações
+                        <button class="btn-add-citacao" onclick="adicionarNovaCitacao()"><i class="ph ph-plus-circle"></i></button>
+                    </div>
+                    <div id="clubeCitacoesLista">
+                        <!-- Citações injetadas via JS -->
+                    </div>
+
+                    <div class="sidebar-section-title">Próxima Leitura (Votos)</div>
+                    <div id="clubeVotosLista">
+                        <!-- Votos injetados via JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="toastSuccess" class="toast-success">
         <i class="ph-fill ph-check-circle" style="font-size: 24px;"></i>
         <span id="toastMessage">Ação realizada com sucesso!</span>
@@ -452,6 +589,7 @@
     <script src="/scripts/cliente/feedback.js"></script>
     <script src="/scripts/cliente/sugestao.js"></script>
     <script src="/scripts/cliente/perfilPublico.js"></script>
+    <script src="/scripts/cliente/clubes.js"></script>
     <script src="/scripts/cliente/app.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -465,5 +603,6 @@
             }
         });
     </script>
+    <script src="scripts/cliente/perfilPublico.js"></script>
 </body>
 </html>

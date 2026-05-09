@@ -17,6 +17,7 @@ function showSection(section) {
         else if (section === 'minhas-reservas') carregarReservasDoServidor().then(() => loadMinhasReservas());
         else if (section === 'meus-favoritos') loadFavoritos();
         else if (section === 'meu-perfil') loadPerfil();
+        else if (section === 'clubes') carregarClubes();
     };
 
     if (current && current.id !== section) {
