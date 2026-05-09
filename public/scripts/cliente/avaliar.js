@@ -87,7 +87,7 @@ async function abrirModalReviews(livroId, titulo) {
                 <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(r.usuario_nome)}&background=random&color=fff" alt="${r.usuario_nome}">
                 <div class="friend-info">
                     <div style="display: flex; justify-content: space-between;">
-                        <strong>${r.usuario_nome}</strong>
+                        <strong onclick="fecharModalReviews(); abrirPerfilPublico(${r.usuario_id})" style="cursor: pointer; color: #9b59b6; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">${r.usuario_nome}</strong>
                         <span style="font-size: 11px; color: var(--text-secondary);">${new Date(r.data_avaliacao).toLocaleDateString()}</span>
                     </div>
                     <div style="color: #f39c12; font-size: 12px; margin: 4px 0;">
@@ -156,7 +156,7 @@ async function abrirModalDetalhes(livroId) {
             <div class="friend-item" style="margin-bottom: 20px; border-bottom: 1px solid rgba(0,0,0,0.03); padding-bottom: 15px;">
                 <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(r.usuario_nome)}&background=random&color=fff" style="width:32px; height:32px;">
                 <div class="friend-info">
-                    <strong>${r.usuario_nome}</strong>
+                    <strong onclick="fecharModalDetalhes(); abrirPerfilPublico(${r.usuario_id})" style="cursor: pointer; color: #9b59b6; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">${r.usuario_nome}</strong>
                     <div style="color: #f39c12; font-size: 11px;">${'★'.repeat(r.nota)}${'☆'.repeat(5-r.nota)}</div>
                     <p style="font-size: 13px; margin-top: 5px;">"${r.comentario || ''}"</p>
                 </div>
