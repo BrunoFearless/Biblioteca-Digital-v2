@@ -26,6 +26,13 @@ async function abrirLeitor(livroId) {
     }
 
     document.getElementById('modalLeitor').classList.add('active');
+    
+    // Limpar chat e preparar para o novo livro
+    document.getElementById('aiChatMessages').innerHTML = `
+        <div class="ai-bubble system">
+            Estou a analisar o conteúdo de "${livro.titulo}" para te ajudar. O que gostarias de saber?
+        </div>`;
+
     fecharModalDetalhes(); // Fechar o modal de detalhes
 }
 
@@ -34,6 +41,9 @@ function fecharLeitor() {
     document.getElementById('modalLeitor').classList.remove('active');
     document.getElementById('pdfViewer').src = '';
     livroSendoLido = null;
+    
+    // Resetar o chat para não mostrar restos da conversa anterior ao abrir outro livro
+    document.getElementById('aiChatMessages').innerHTML = '';
 }
 
 async function salvarProgressoLeitura() {
@@ -58,5 +68,44 @@ async function salvarProgressoLeitura() {
         }
     } catch (e) {
         console.error(e);
+    }
+}
+
+// Lógica da IA
+async function enviarMensagemIA() {
+    const input = document.getElementById('aiInput');
+    const msg = input.value.trim();
+    if (!msg || !livroSendoLido) return;
+
+    const container = document.getElementById('aiChatMessages');
+    const livro = livrosLocal.find(l => l.id === livroSendoLido);
+
+    // Adicionar mensagem do user
+    container.innerHTML += `<div class="ai-bubble user">${msg}</div>`;
+    input.value = '';
+    container.scrollTop = container.scrollHeight;
+
+    // Bolha de "digitando"
+    const typingId = 'typing-' + Date.now();
+    container.innerHTML += `<div id="${typingId}" class="ai-bubble system"><i>O assistente está a analisar...</i></div>`;
+    container.scrollTop = container.scrollHeight;
+
+    try {
+        const res = await fetch('/api/ia/perguntar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                pergunta: msg,
+                livroContexto: livro
+            })
+        });
+        const data = await res.json();
+        
+        // Remover bolha de digitando e adicionar resposta
+        document.getElementById(typingId).remove();
+        container.innerHTML += `<div class="ai-bubble system">${data.resposta}</div>`;
+        container.scrollTop = container.scrollHeight;
+    } catch (e) {
+        document.getElementById(typingId).innerHTML = 'Erro ao contactar o assistente.';
     }
 }

@@ -228,40 +228,53 @@
         </div>
     </div>
 
-    <!-- Modal Leitor de PDF (Fullscreen) -->
-    <div id="modalLeitor" class="modal leitor-fullscreen">
-        <div class="leitor-container">
-            <div class="leitor-header">
-                <div class="leitor-info">
-                    <h3 id="leitorTitulo">Lendo Livro</h3>
-                    <span id="leitorProgresso">Página --</span>
-                </div>
-                <div class="leitor-actions">
-                    <button class="btn-action btn-info" onclick="salvarProgressoLeitura()"><i class="ph ph-floppy-disk"></i> Guardar</button>
-                    <button class="btn-action btn-danger" onclick="fecharLeitor()"><i class="ph ph-x"></i> Sair da Leitura</button>
+    <!-- Interface de Leitura Imersiva (Fullscreen) -->
+    <div id="modalLeitor" class="leitor-interface-premium">
+        <header class="leitor-header-glass">
+            <div class="leitor-branding">
+                <i class="ph ph-books"></i>
+                <div class="leitor-titles">
+                    <h2 id="leitorTitulo">Carregando Obra...</h2>
+                    <span id="leitorProgresso">Sessão Iniciada</span>
                 </div>
             </div>
-            <div class="leitor-body">
-                <div class="leitor-frame-wrapper">
-                    <iframe id="pdfViewer" src="" frameborder="0"></iframe>
+            <div class="leitor-controls">
+                <button class="btn-leitor-save" onclick="salvarProgressoLeitura()">
+                    <i class="ph ph-bookmark-simple"></i> Guardar Progresso
+                </button>
+                <button class="btn-leitor-close" onclick="fecharLeitor()">
+                    <i class="ph ph-power"></i> Encerrar
+                </button>
+            </div>
+        </header>
+
+        <main class="leitor-main-content">
+            <!-- PDF Viewer (80%) -->
+            <section class="leitor-pdf-viewport">
+                <iframe id="pdfViewer" src="" frameborder="0"></iframe>
+            </section>
+
+            <!-- Assistente IA (20%) -->
+            <aside class="leitor-ai-sidebar-premium">
+                <div class="ai-sidebar-header">
+                    <div class="ai-status">
+                        <span class="status-dot"></span>
+                        <i class="ph ph-sparkle"></i> IA Assistente
+                    </div>
                 </div>
-                <!-- Barra Lateral de IA -->
-                <div class="leitor-ai-sidebar">
-                    <div class="ai-header">
-                        <i class="ph ph-sparkle"></i> Assistente de Leitura
+                <div id="aiChatMessages" class="ai-chat-body">
+                    <div class="ai-bubble system">
+                        Estou a analisar o conteúdo para te ajudar. O que gostarias de saber sobre este livro?
                     </div>
-                    <div id="aiChatMessages" class="ai-messages">
-                        <div class="ai-bubble system">
-                            Olá! Sou o teu assistente. Podes perguntar-me sobre este livro, pedir resumos ou tirar dúvidas sobre o conteúdo.
-                        </div>
-                    </div>
-                    <div class="ai-input-area">
-                        <input type="text" id="aiInput" placeholder="Pergunta ao assistente..." onkeyup="if(event.key === 'Enter') enviarMensagemIA()">
+                </div>
+                <div class="ai-chat-input-wrapper">
+                    <div class="ai-input-group">
+                        <input type="text" id="aiInput" placeholder="Pergunta algo..." onkeyup="if(event.key === 'Enter') enviarMensagemIA()">
                         <button onclick="enviarMensagemIA()"><i class="ph ph-paper-plane-right"></i></button>
                     </div>
                 </div>
-            </div>
-        </div>
+            </aside>
+        </main>
     </div>
 
     <div id="toastSuccess" class="toast-success">
