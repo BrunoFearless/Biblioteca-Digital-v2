@@ -7,6 +7,7 @@ import { createRelatoriosApiRoutes } from "./api/relatoriosApiRoutes.js";
 import { createTestApiRoutes } from "./api/testApiRoutes.js";
 import { createFavoritosApiRoutes } from "./api/favoritosApiRoutes.js";
 import { createAvaliacoesApiRoutes } from "./api/avaliacoesApiRoutes.js";
+import { createLeituraApiRoutes } from "./api/leituraApiRoutes.js";
 
 export function createApiRoutes(upload) {
   const router = Router();
@@ -18,6 +19,7 @@ export function createApiRoutes(upload) {
   router.use("/relatorios", createRelatoriosApiRoutes());
   router.use("/favoritos", createFavoritosApiRoutes());
   router.use("/avaliacoes", createAvaliacoesApiRoutes());
+  router.use("/leitura", createLeituraApiRoutes());
 
   return router;
 }

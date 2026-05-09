@@ -82,6 +82,7 @@ function editarLivro(id) {
             document.getElementById('formCapaUrl').value = livro.capa_url || '';
             document.getElementById('formCapaArquivo').value = '';
             document.getElementById('formDescricao').value = livro.descricao || '';
+            document.getElementById('pdfStatus').textContent = livro.pdf_url ? '📄 PDF já carregado' : '❌ Nenhum PDF associado';
             if (livro.capa_url) {
                 let raw = String(livro.capa_url).replace(/\\/g, '/').replace(/^\/+/, '');
                 const capaUrl = raw.startsWith('http') ? raw : ('/' + raw);
@@ -113,6 +114,7 @@ async function salvarLivro(event) {
     const ano = document.getElementById('formAno').value;
     const estoque = document.getElementById('formEstoque').value;
     const capaArquivo = document.getElementById('formCapaArquivo').files[0];
+    const pdfArquivo = document.getElementById('formPdfArquivo').files[0];
     const capaUrl = document.getElementById('formCapaUrl').value.trim();
     const descricao = document.getElementById('formDescricao').value.trim();
     if (!titulo || !autor || !genero || !ano || !estoque) return alert('Por favor, preencha todos os campos obrigatórios!');
@@ -131,6 +133,7 @@ async function salvarLivro(event) {
         formData.append('descricao', descricao);
         if (capaArquivo) formData.append('capa', capaArquivo);
         else if (capaUrl) formData.append('capa_url', capaUrl);
+        if (pdfArquivo) formData.append('pdf', pdfArquivo);
         const url = modalLivro === 'novo' ? '/api/livros' : `/api/livros/${modalLivro}`;
         const metodo = modalLivro === 'novo' ? 'POST' : 'PUT';
         const res = await fetch(url, { method: metodo, body: formData });

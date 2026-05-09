@@ -11,6 +11,7 @@ async function createConnection() {
       host: process.env.DB_HOST,
       user: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
+      database: process.env.DB_DATABASE,
     });
   }
   return connection;
@@ -48,8 +49,23 @@ async function initializeDatabase() {
         descricao TEXT
       );
     `);
-    // Adiciona coluna descricao se não existir (para migração)
+    // Adiciona colunas se não existirem
     await connection.query(`ALTER TABLE livros ADD COLUMN descricao TEXT NULL;`).catch(()=>{});
+    await connection.query(`ALTER TABLE livros ADD COLUMN pdf_url VARCHAR(500) NULL;`).catch(()=>{});
+
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS progresso_leitura (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        usuario_id INT NOT NULL,
+        livro_id INT NOT NULL,
+        ultima_pagina INT DEFAULT 1,
+        total_paginas INT DEFAULT 0,
+        data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        UNIQUE KEY user_book (usuario_id, livro_id),
+        FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+        FOREIGN KEY (livro_id) REFERENCES livros(id) ON DELETE CASCADE
+      );
+    `);
 
     await connection.query(`
       CREATE TABLE IF NOT EXISTS usuarios (

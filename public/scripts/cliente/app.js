@@ -1,7 +1,11 @@
 if (initClienteContext()) {
-    carregarEmprestimosDoServidor();
-    carregarReservasDoServidor();
-    loadCatalogo();
+    Promise.all([
+        carregarEmprestimosDoServidor(),
+        carregarReservasDoServidor()
+    ]).then(() => {
+        loadCatalogo();
+        updateRightPanel();
+    });
 }
 
 window.showSection = showSection;
@@ -12,3 +16,4 @@ window.confirmarAcao = confirmarAcao;
 window.cancelarReserva = cancelarReserva;
 window.fazerLogout = fazerLogout;
 window.mostrarLivrosPorCategoria = mostrarLivrosPorCategoria;
+window.updateRightPanel = updateRightPanel;

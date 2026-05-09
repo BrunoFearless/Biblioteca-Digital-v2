@@ -23,18 +23,18 @@ export function createLivrosApiRoutes(upload) {
     }
   });
 
-  router.post("/", upload.single("capa"), async (req, res) => {
+  router.post("/", upload.fields([{ name: 'capa', maxCount: 1 }, { name: 'pdf', maxCount: 1 }]), async (req, res) => {
     try {
-      const result = await criarLivro(req.body, req.file);
+      const result = await criarLivro(req.body, req.files);
       return res.status(201).json({ message: "Livro criado com sucesso", ...result });
     } catch (error) {
       return handleRouteError(res, error, "Erro ao criar livro");
     }
   });
 
-  router.put("/:id", upload.single("capa"), async (req, res) => {
+  router.put("/:id", upload.fields([{ name: 'capa', maxCount: 1 }, { name: 'pdf', maxCount: 1 }]), async (req, res) => {
     try {
-      const result = await atualizarLivro(req.params.id, req.body, req.file);
+      const result = await atualizarLivro(req.params.id, req.body, req.files);
       return res.status(200).json({ message: "Livro atualizado com sucesso", ...result });
     } catch (error) {
       return handleRouteError(res, error, "Erro ao atualizar livro");

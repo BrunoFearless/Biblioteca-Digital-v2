@@ -10,25 +10,30 @@ export function configureUpload(baseDir) {
 
   const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-      cb(null, uploadsDir);
+      const folder = file.fieldname === 'pdf' ? 'livros' : 'capas';
+      const target = path.join(baseDir, "public", "uploads", folder);
+      if (!fs.existsSync(target)) fs.mkdirSync(target, { recursive: true });
+      cb(null, target);
     },
     filename: (req, file, cb) => {
-      const nameParts = file.originalname.split(".");
-      const extension = nameParts[nameParts.length - 1];
-      const uniqueName = `capa_${Date.now()}_${Math.random().toString(36).substr(2, 9)}.${extension}`;
+      const ext = path.extname(file.originalname);
+      const prefix = file.fieldname === 'pdf' ? 'book' : 'capa';
+      const uniqueName = `${prefix}_${Date.now()}_${Math.random().toString(36).substr(2, 5)}${ext}`;
       cb(null, uniqueName);
     },
   });
 
   return multer({
     storage,
-    limits: { fileSize: 5 * 1024 * 1024 },
+    limits: { fileSize: 20 * 1024 * 1024 }, // Aumentar limite para 20MB para PDFs
     fileFilter: (req, file, cb) => {
-      const mimetypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
-      if (mimetypes.includes(file.mimetype)) {
-        cb(null, true);
+      const imageTypes = ["image/jpeg", "image/png", "image/webp"];
+      if (file.fieldname === 'pdf') {
+        if (file.mimetype === "application/pdf") cb(null, true);
+        else cb(new Error("Arquivo deve ser um PDF válido"));
       } else {
-        cb(new Error("Arquivo deve ser uma imagem válida"));
+        if (imageTypes.includes(file.mimetype)) cb(null, true);
+        else cb(new Error("Arquivo deve ser uma imagem válida"));
       }
     },
   });

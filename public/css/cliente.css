@@ -11,6 +11,17 @@
     
     --font-heading: 'Playfair Display', serif;
     --font-body: 'Inter', sans-serif;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body.dark-mode {
+    --bg-color: #121212;
+    --sidebar-bg: #1a1a1a;
+    --card-bg: #1e1e1e;
+    --text-primary: #f0f0f0;
+    --text-secondary: #a0a0a0;
+    --accent: #d64b4b;
+    --hover-bg: #2a2a2a;
 }
 
 * {
@@ -26,11 +37,282 @@ body {
     min-height: 100vh;
 }
 
+/* Leitor Fullscreen */
+.leitor-fullscreen {
+    background: #1a1a1a;
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+}
+
+.leitor-fullscreen.active {
+    display: block;
+}
+
+.leitor-container {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.leitor-header {
+    background: #252525;
+    color: white;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.leitor-info h3 {
+    font-size: 1.1rem;
+    margin-bottom: 2px;
+}
+
+.leitor-info span {
+    font-size: 0.85rem;
+    color: #a0a0a0;
+}
+
+.leitor-body {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+}
+
+.leitor-frame-wrapper {
+    flex: 1;
+    background: #525659;
+    display: flex;
+    justify-content: center;
+}
+
+.leitor-ai-sidebar {
+    width: 320px;
+    background: #f8f9fa;
+    border-left: 1px solid rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+}
+
+.ai-header {
+    padding: 15px;
+    background: white;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--primary-color);
+}
+
+.ai-messages {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.ai-bubble {
+    padding: 10px 14px;
+    border-radius: 15px;
+    font-size: 0.85rem;
+    max-width: 85%;
+    line-height: 1.4;
+}
+
+.ai-bubble.system {
+    background: white;
+    border: 1px solid rgba(0,0,0,0.05);
+    align-self: flex-start;
+}
+
+.ai-bubble.user {
+    background: var(--primary-color);
+    color: white;
+    align-self: flex-end;
+}
+
+.ai-input-area {
+    padding: 15px;
+    background: white;
+    border-top: 1px solid rgba(0,0,0,0.05);
+    display: flex;
+    gap: 8px;
+}
+
+.ai-input-area input {
+    flex: 1;
+    border: 1px solid rgba(0,0,0,0.1);
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    outline: none;
+}
+
+.ai-input-area button {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.leitor-actions {
+    display: flex;
+    gap: 12px;
+}
+
+/* Ranking Social */
+.top-readers-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.reader-badge {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px;
+    border-radius: 10px;
+    background: rgba(0,0,0,0.03);
+    transition: all 0.3s ease;
+}
+
+.reader-badge:hover {
+    background: rgba(0,0,0,0.06);
+    transform: translateX(5px);
+}
+
+.reader-rank {
+    font-weight: 800;
+    font-size: 0.9rem;
+    color: var(--primary-color);
+    width: 20px;
+}
+
+.reader-name {
+    flex: 1;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.reader-count {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    background: rgba(0,0,0,0.05);
+    padding: 2px 8px;
+    border-radius: 20px;
+}
+
 .app-shell {
     display: grid;
     grid-template-columns: 80px 1fr 340px;
     height: 100vh;
     overflow: hidden;
+}
+
+/* Glass Confirmation Modal - Versão Estável */
+.glass-confirm-modal {
+    background: white !important;
+    border-radius: 20px !important;
+    padding: 30px !important;
+    text-align: center !important;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2) !important;
+    width: min(400px, 90%);
+    margin: 15vh auto;
+    position: relative;
+    z-index: 2200;
+}
+
+#modal.show {
+    display: block !important;
+}
+
+.dark-mode .glass-confirm-modal {
+    background: #252525 !important;
+    color: white;
+}
+
+.confirm-icon {
+    width: 60px;
+    height: 60px;
+    background: var(--primary-color);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    margin: 0 auto 20px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+}
+
+.glass-confirm-modal h2 {
+    font-family: var(--font-heading);
+    margin-bottom: 10px;
+    font-size: 1.5rem;
+}
+
+.glass-confirm-modal p {
+    color: var(--text-secondary);
+    margin-bottom: 30px;
+    line-height: 1.5;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.btn-confirm-glass, .btn-cancel-glass {
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    flex: 1;
+}
+
+.btn-confirm-glass {
+    background: #27ae60;
+    color: white;
+}
+
+.btn-confirm-glass:hover {
+    background: #219150;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
+}
+
+.btn-cancel-glass {
+    background: rgba(0,0,0,0.05);
+    color: var(--text-primary);
+}
+
+.btn-cancel-glass:hover {
+    background: rgba(0,0,0,0.1);
+}
+
+.dark-mode .glass-confirm-modal {
+    background: rgba(30, 30, 30, 0.8) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.dark-mode .btn-cancel-glass {
+    background: rgba(255,255,255,0.1);
+    color: white;
 }
 
 /* Sidebar */
@@ -304,6 +586,7 @@ body {
     max-width: 220px;
     display: flex;
     flex-direction: column;
+    cursor: pointer;
 }
 
 .book-cover {
@@ -547,6 +830,32 @@ body {
     justify-content: center;
 }
 
+.cal-day.has-return strong {
+    color: var(--primary);
+    border: 1px solid var(--primary);
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.return-dot {
+    width: 4px;
+    height: 4px;
+    background: var(--primary);
+    border-radius: 50%;
+    margin: 2px auto 0;
+}
+
+.empty-reading {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    font-style: italic;
+}
+
 .friend-item {
     display: flex;
     gap: 12px;
@@ -719,11 +1028,9 @@ body {
 .modal.active { display: block; }
 
 .modal-content {
-    width: min(400px, 90%);
-    margin: 20vh auto;
     background: var(--card-bg);
-    padding: 30px;
     border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
 }
 .modal-buttons {
     display: flex;

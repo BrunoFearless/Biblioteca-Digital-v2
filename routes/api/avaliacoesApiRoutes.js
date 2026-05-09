@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { avaliarLivro, listarAvaliacoes, obterAvaliacoesMedias } from "../../services/avaliacoesService.js";
+import { avaliarLivro, listarAvaliacoes, obterAvaliacoesMedias, listarAtividadeRecente, obterRankingLeitores } from "../../services/avaliacoesService.js";
 import { handleRouteError } from "../../utils/httpError.js";
 
 export function createAvaliacoesApiRoutes() {
@@ -11,6 +11,26 @@ export function createAvaliacoesApiRoutes() {
       return res.status(200).json(await obterAvaliacoesMedias());
     } catch (error) {
       return handleRouteError(res, error, "Erro ao buscar médias de avaliações");
+    }
+  });
+
+  // Obter atividade recente (feed)
+  router.get("/recente", async (req, res) => {
+    try {
+      return res.status(200).json(await listarAtividadeRecente());
+    } catch (error) {
+      return handleRouteError(res, error, "Erro ao buscar atividade recente");
+    }
+  });
+
+  // Obter ranking de leitores
+  router.get("/ranking", async (req, res) => {
+    try {
+      const ranking = await obterRankingLeitores();
+      return res.status(200).json(ranking);
+    } catch (error) {
+      console.error("ERRO NO RANKING:", error);
+      return res.status(500).json({ error: error.message });
     }
   });
 

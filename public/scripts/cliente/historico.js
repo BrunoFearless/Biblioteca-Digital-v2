@@ -44,7 +44,7 @@ async function cancelarReserva(id) {
         const resp = await fetch(`/api/reservas/${id}/cancelar`, { method: 'PUT', headers: { 'Content-Type': 'application/json' } });
         const data = await resp.json();
         if (resp.ok) {
-            alert('❌ Reserva cancelada com sucesso!');
+            showSuccessFeedback('❌ Reserva cancelada com sucesso!');
             await carregarReservasDoServidor();
             loadMinhasReservas();
         } else {

@@ -69,8 +69,8 @@ function renderizarLivros(livros) {
             })();
 
             html += `
-                <div class="book-card" style="position: relative;">
-                    <button class="favorite-btn ${ehFavorito ? 'active' : ''}" onclick="toggleFavorito(this, ${livro.id})">
+                <div class="book-card" style="position: relative;" onclick="abrirModalDetalhes(${livro.id})">
+                    <button class="favorite-btn ${ehFavorito ? 'active' : ''}" onclick="event.stopPropagation(); toggleFavorito(this, ${livro.id})">
                         <i class="ph-fill ph-heart"></i>
                     </button>
                     <div class="book-cover" style="${capaUrl ? `background-image: url('${capaUrl}'); background-size: cover; background-position: center;` : `background: linear-gradient(135deg, ${getGradientColor(livro.titulo)} 0%, ${getGradientColor(livro.autor)} 100%);`}">
@@ -89,10 +89,10 @@ function renderizarLivros(livros) {
                         <div class="book-meta"><span>${livro.genero}</span><span>${livro.ano_publicacao}</span></div>
                         <div class="stock-info">${livro.estoque > 0 ? `⏱️ ${livro.estoque} disponível` : '❌ Indisponível'}</div>
                         <div class="action-buttons">
-                            <button class="btn-action btn-borrow btn-success" onclick="abrirModal('borrow', ${livro.id}, '${livro.titulo.replace(/'/g, "\\'")}')" ${jaPegueiEmprestado || livro.estoque === 0 ? 'disabled' : ''}>
+                            <button class="btn-action btn-borrow btn-success" onclick="event.stopPropagation(); abrirModal('borrow', ${livro.id}, '${livro.titulo.replace(/'/g, "\\'")}')" ${jaPegueiEmprestado || livro.estoque === 0 ? 'disabled' : ''}>
                                 ${jaPegueiEmprestado ? '✓ Pegado' : 'Pegar'}
                             </button>
-                            <button class="btn-action btn-reserve btn-info" onclick="abrirModal('reserve', ${livro.id}, '${livro.titulo.replace(/'/g, "\\'")}')" ${jaReservei ? 'disabled' : ''}>
+                            <button class="btn-action btn-reserve btn-info" onclick="event.stopPropagation(); abrirModal('reserve', ${livro.id}, '${livro.titulo.replace(/'/g, "\\'")}')" ${jaReservei ? 'disabled' : ''}>
                                 ${jaReservei ? '✓ Reservado' : 'Reservar'}
                             </button>
                         </div>
