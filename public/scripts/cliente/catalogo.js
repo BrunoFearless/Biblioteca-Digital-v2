@@ -25,7 +25,7 @@ async function loadCatalogo() {
 }
 
 function renderizarPills() {
-    const categorias = ['Todos', ...new Set(livrosLocal.map(l => l.genero).filter(Boolean))];
+    const categorias = ['Todos', ...new Set(livrosLocal.map(l => l.genero || l.categoria).filter(Boolean))];
     const container = document.getElementById('categoryPills');
     container.innerHTML = categorias.map(cat => `
         <button class="pill ${cat === 'Todos' ? 'active' : ''}" onclick="filtrarPorCategoria(this, '${cat}')">${cat}</button>
@@ -38,14 +38,14 @@ function filtrarPorCategoria(btn, categoria) {
     
     const filtrados = categoria === 'Todos' 
         ? livrosLocal 
-        : livrosLocal.filter(l => l.genero === categoria);
+        : livrosLocal.filter(l => (l.genero || l.categoria) === categoria);
     renderizarLivros(filtrados);
 }
 
 function filtrarLivros() {
     const termo = document.getElementById('searchInput').value.toLowerCase();
     const filtrados = livrosLocal.filter(
-        (l) => l.titulo.toLowerCase().includes(termo) || l.autor.toLowerCase().includes(termo) || l.genero.toLowerCase().includes(termo)
+        (l) => l.titulo.toLowerCase().includes(termo) || l.autor.toLowerCase().includes(termo) || (l.genero || l.categoria || '').toLowerCase().includes(termo)
     );
     renderizarLivros(filtrados);
 }
@@ -86,7 +86,7 @@ function renderizarLivros(livros) {
                             <span class="rating-count">(${avaliacao.total_avaliacoes})</span>
                         </div>
 
-                        <div class="book-meta"><span>${livro.genero}</span><span>${livro.ano_publicacao}</span></div>
+                        <div class="book-meta"><span>${livro.genero || livro.categoria}</span><span>${livro.ano_publicacao}</span></div>
                         <div class="stock-info">${livro.estoque > 0 ? `⏱️ ${livro.estoque} disponível` : '❌ Indisponível'}</div>
                         <div class="action-buttons">
                             <button class="btn-action btn-borrow btn-success" onclick="event.stopPropagation(); abrirModal('borrow', ${livro.id}, '${livro.titulo.replace(/'/g, "\\'")}')" ${jaPegueiEmprestado || livro.estoque === 0 ? 'disabled' : ''}>
@@ -108,7 +108,7 @@ async function loadCategorias() {
     try {
         const livros = await fetch('/api/livros').then((r) => r.json());
         livrosLocal = livros;
-        const categorias = [...new Set(livros.map((l) => l.genero).filter(Boolean))];
+        const categorias = [...new Set(livros.map((l) => l.genero || l.categoria).filter(Boolean))];
         document.getElementById('categoriasList').innerHTML = categorias
             .map((cat) => {
                 const catEsc = encodeURIComponent(cat);
@@ -123,7 +123,7 @@ async function loadCategorias() {
 
 function mostrarLivrosPorCategoria(categoria) {
     const normalizar = (str) => (str || '').trim().toLowerCase();
-    const livros = livrosLocal.filter((l) => normalizar(l.genero) === normalizar(categoria));
+    const livros = livrosLocal.filter((l) => normalizar(l.genero || l.categoria) === normalizar(categoria));
     let html = '<div class="books-grid">';
     if (livros.length === 0) {
         html = '<div class="empty-state">Nenhum livro nesta categoria</div>';
@@ -139,7 +139,7 @@ function mostrarLivrosPorCategoria(categoria) {
                 <div class="book-details">
                     <div class="book-title">${livro.titulo}</div>
                     <div class="book-author">${livro.autor}</div>
-                    <div class="book-meta"><span>${livro.genero}</span><span>${livro.ano_publicacao}</span></div>
+                    <div class="book-meta"><span>${livro.genero || livro.categoria}</span><span>${livro.ano_publicacao}</span></div>
                     <div class="stock-info">${livro.estoque > 0 ? `⏱️ ${livro.estoque} disponível` : '❌ Indisponível'}</div>
                     <div class="action-buttons">
                         <button class="btn-action btn-borrow btn-success" onclick="abrirModal('borrow', ${livro.id}, '${livro.titulo.replace(/'/g, "\\'")}')" ${livro.estoque === 0 ? 'disabled' : ''}>Pegar</button>

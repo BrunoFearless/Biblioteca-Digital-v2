@@ -13,6 +13,7 @@ function showSection(section) {
             if (onclick.includes(section)) btn.classList.add('active');
         });
         if (section === 'dashboard') loadDashboard();
+        else if (section === 'pendentes') carregarPendentes();
         else if (section === 'livros') loadLivros();
         else if (section === 'usuarios') loadUsuarios();
         else if (section === 'emprestimos') loadEmprestimos();

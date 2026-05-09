@@ -119,7 +119,7 @@ async function abrirModalDetalhes(livroId) {
     document.getElementById('detalheTitulo').textContent = livro.titulo;
     document.getElementById('detalheAutor').textContent = `por ${livro.autor}`;
     document.getElementById('detalheDescricao').textContent = livro.descricao || "Este livro ainda não possui uma descrição detalhada.";
-    document.getElementById('detalheMeta').innerHTML = `<span>${livro.genero}</span> • <span>${livro.ano_publicacao}</span>`;
+    document.getElementById('detalheMeta').innerHTML = `<span>${livro.genero || livro.categoria}</span> • <span>${livro.ano_publicacao}</span>`;
     
     // Capa
     const capaUrl = (() => {

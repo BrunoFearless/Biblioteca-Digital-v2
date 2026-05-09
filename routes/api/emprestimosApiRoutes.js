@@ -31,5 +31,24 @@ export function createEmprestimosApiRoutes() {
     }
   });
 
+  // Nova rota para buscar empréstimos de um usuário com o título do livro
+  router.get("/usuario/:id", async (req, res) => {
+    try {
+      const { createConnection } = await import("../../db.js");
+      const connection = await createConnection();
+      const [rows] = await connection.execute(
+        `SELECT e.*, l.titulo 
+         FROM emprestimos e 
+         JOIN livros l ON e.livro_id = l.id 
+         WHERE e.usuario_id = ?`,
+        [req.params.id]
+      );
+      return res.status(200).json(rows);
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: "Erro ao buscar empréstimos do usuário" });
+    }
+  });
+
   return router;
 }

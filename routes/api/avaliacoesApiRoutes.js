@@ -57,5 +57,24 @@ export function createAvaliacoesApiRoutes() {
     }
   });
 
+  // Obter avaliações de um usuário específico
+  router.get("/usuario/:id", async (req, res) => {
+    try {
+      const { createConnection } = await import("../../db.js");
+      const connection = await createConnection();
+      const [rows] = await connection.execute(
+        `SELECT a.*, l.titulo as titulo_livro 
+         FROM avaliacoes a 
+         JOIN livros l ON a.livro_id = l.id 
+         WHERE a.usuario_id = ?`,
+        [req.params.id]
+      );
+      return res.status(200).json(rows);
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: "Erro ao buscar avaliações do usuário" });
+    }
+  });
+
   return router;
 }

@@ -26,7 +26,7 @@
                 <button class="nav-btn" onclick="showSection('meus-favoritos')" title="Favoritos"><i class="ph ph-heart"></i></button>
                 <button class="nav-btn" onclick="showSection('meus-emprestimos')" title="Meus Empréstimos"><i class="ph ph-book-open"></i></button>
                 <button class="nav-btn" onclick="showSection('minhas-reservas')" title="Minhas Reservas"><i class="ph ph-bookmark-simple"></i></button>
-                <button class="nav-btn" onclick="showSection('meu-perfil')" title="O Meu Perfil"><i class="ph ph-chart-pie-slice"></i></button>
+                <button class="nav-btn" onclick="showSection('meu-perfil')" title="O Meu Perfil"><i class="ph ph-user-circle"></i></button>
             </nav>
             <div class="sidebar-bottom">
                 <button class="nav-btn" id="themeToggle" title="Alternar Tema"><i class="ph ph-moon"></i></button>
@@ -78,30 +78,61 @@
             </section>
 
             <section id="meu-perfil" class="content-section">
-                <div class="section-header">
-                    <h2>O Meu Perfil & Estatísticas</h2>
-                </div>
-                
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <i class="ph ph-book"></i>
-                        <div class="stat-info">
-                            <h3 id="statTotalLidos">0</h3>
-                            <p>Livros Lidos</p>
-                        </div>
+                <div class="profile-header-premium" style="display: flex; align-items: center; gap: 30px; background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); margin-top: 20px;">
+                    <div class="profile-avatar-large" style="width: 100px; height: 100px; border-radius: 50%; overflow: hidden; border: 4px solid #eee;">
+                        <img id="profilePageAvatar" src="" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover;">
                     </div>
-                    <div class="stat-card">
-                        <i class="ph ph-clock"></i>
-                        <div class="stat-info">
-                            <h3 id="statEmprestimosAtivos">0</h3>
-                            <p>Em Curso</p>
-                        </div>
+                    <div class="profile-text">
+                        <h2 id="profilePageName" style="font-family: var(--font-heading); font-size: 2rem; margin-bottom: 5px;">Carregando...</h2>
+                        <p id="profilePageEmail" style="color: var(--text-secondary); font-size: 1rem;"></p>
                     </div>
                 </div>
 
-                <div class="chart-container glass-card">
-                    <h3>Atividade de Leitura</h3>
-                    <canvas id="readingChart"></canvas>
+                <div class="profile-sections-container" style="margin-top: 30px; display: grid; gap: 40px;">
+                    <!-- Leituras Atuais -->
+                    <div class="profile-group">
+                        <h3 style="font-family: var(--font-heading); margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                            <i class="ph ph-book-open" style="color: var(--primary);"></i> Leituras Atuais
+                        </h3>
+                        <div id="minhasLeiturasAtuais" class="profile-books-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px;">
+                            <p class="loading-text" style="color: var(--text-secondary); font-size: 0.9rem;">Carregando leituras...</p>
+                        </div>
+                    </div>
+
+                    <!-- Histórico de Lidos -->
+                    <div class="profile-group">
+                        <h3 style="font-family: var(--font-heading); margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                            <i class="ph ph-check-circle" style="color: #27ae60;"></i> Livros Lidos
+                        </h3>
+                        <div id="meuHistoricoLidos" class="profile-books-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px;">
+                            <p class="loading-text" style="color: var(--text-secondary); font-size: 0.9rem;">Carregando histórico...</p>
+                        </div>
+                    </div>
+
+                    <!-- Minhas Críticas -->
+                    <div class="profile-group">
+                        <h3 style="font-family: var(--font-heading); margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                            <i class="ph ph-chat-centered-text" style="color: #f39c12;"></i> As Minhas Críticas
+                        </h3>
+                        <div id="minhasCriticasLista" class="profile-reviews-list" style="display: flex; flex-direction: column; gap: 15px;">
+                            <p class="loading-text" style="color: var(--text-secondary); font-size: 0.9rem;">Carregando críticas...</p>
+                        </div>
+                    </div>
+
+                    <!-- Livros Publicados -->
+                    <div class="profile-group">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <h3 style="font-family: var(--font-heading); display: flex; align-items: center; gap: 10px; margin: 0;">
+                                <i class="ph ph-pencil-line" style="color: #9b59b6;"></i> Livros Publicados
+                            </h3>
+                            <button class="btn-primary" onclick="abrirModalSugestao()" style="font-size: 0.75rem; padding: 6px 12px;">
+                                <i class="ph ph-plus"></i> Publicar Obra
+                            </button>
+                        </div>
+                        <div id="meusLivrosPublicados" class="profile-books-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px;">
+                            <p class="loading-text" style="color: var(--text-secondary); font-size: 0.9rem;">Carregando publicações...</p>
+                        </div>
+                    </div>
                 </div>
             </section>
 
@@ -277,6 +308,52 @@
         </main>
     </div>
 
+    <!-- Modal de Sugestão de Obra -->
+    <div id="modalSugestao" class="modal">
+        <div class="modal-content glass-confirm-modal" style="width: min(500px, 95%); position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); margin: 0;">
+             <div class="confirm-icon" style="background: #9b59b6;"><i class="ph ph-upload-simple"></i></div>
+             <h2 style="font-family: var(--font-heading); margin-bottom: 10px;">Publicar Nova Obra</h2>
+             <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 20px;">Submeta o seu livro em PDF para análise do administrador.</p>
+             
+             <form id="formSugestao" onsubmit="enviarSugestao(event)">
+                <input type="text" id="sugestaoTitulo" placeholder="Título da Obra" class="glass-input" required style="margin-bottom: 12px; background: #f9f9f9;">
+                <input type="text" id="sugestaoAutor" placeholder="Autor" class="glass-input" required style="margin-bottom: 12px; background: #f9f9f9;">
+                
+                <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 10px; margin-bottom: 12px;">
+                    <select id="sugestaoCategoria" class="glass-input" required style="background: #f9f9f9; width: 100%; margin: 0;">
+                        <option value="" disabled selected>Categoria</option>
+                        <option value="Programação">Programação</option>
+                        <option value="Design">Design</option>
+                        <option value="Literatura">Literatura</option>
+                        <option value="Negócios">Negócios</option>
+                        <option value="Outros">Outros</option>
+                    </select>
+                    <input type="number" id="sugestaoAno" placeholder="Ano" class="glass-input" required min="1900" max="2099" style="background: #f9f9f9; margin: 0;">
+                    <input type="number" id="sugestaoEstoque" placeholder="Qtd" class="glass-input" required min="1" value="1" style="background: #f9f9f9; margin: 0;">
+                </div>
+
+                <textarea id="sugestaoDescricao" placeholder="Sinopse / Descrição da obra..." class="glass-input" required style="margin-bottom: 12px; background: #f9f9f9; min-height: 80px; resize: vertical;"></textarea>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                    <div class="file-upload-wrapper" style="text-align: left;">
+                        <label for="sugestaoCapa" style="display: block; font-size: 0.75rem; font-weight: 600; margin-bottom: 5px; color: var(--text-secondary);">Capa (Imagem):</label>
+                        <input type="file" id="sugestaoCapa" accept="image/*" required style="font-size: 0.75rem; width: 100%;">
+                    </div>
+                    <div class="file-upload-wrapper" style="text-align: left;">
+                        <label for="sugestaoPdf" style="display: block; font-size: 0.75rem; font-weight: 600; margin-bottom: 5px; color: var(--text-secondary);">Livro (PDF):</label>
+                        <input type="file" id="sugestaoPdf" accept="application/pdf" required onchange="atualizarNomeFicheiro(this)" style="font-size: 0.75rem; width: 100%;">
+                    </div>
+                </div>
+                <p id="nomeFicheiroPdf" style="font-size: 0.7rem; color: #d64b4b; margin-top: -10px; margin-bottom: 20px; font-weight: 500; text-align: left;"></p>
+
+                <div class="modal-buttons" style="gap: 15px;">
+                    <button type="submit" class="btn-confirm-glass" style="background: #9b59b6;">Enviar para Análise</button>
+                    <button type="button" class="btn-cancel-glass" onclick="fecharModalSugestao()">Cancelar</button>
+                </div>
+             </form>
+        </div>
+    </div>
+
     <div id="toastSuccess" class="toast-success">
         <i class="ph-fill ph-check-circle" style="font-size: 24px;"></i>
         <span id="toastMessage">Ação realizada com sucesso!</span>
@@ -294,6 +371,7 @@
     <script src="/scripts/cliente/modal.js"></script>
     <script src="/scripts/cliente/navigation.js"></script>
     <script src="/scripts/cliente/feedback.js"></script>
+    <script src="/scripts/cliente/sugestao.js"></script>
     <script src="/scripts/cliente/app.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
